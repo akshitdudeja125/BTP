@@ -44,7 +44,7 @@ chan toNodes[NUM_SERVERS] = [MSG_CAPACITY] of { Message };
 // The following variables are actually local,
 // we move them globally, because SPIN doesn't support
 // that represent LTL with local variables.
-mtype:State = { leader,candidate,follower };
+mtype:State = { leader,candidate,follower,crashed };
 mtype:State state[NUM_SERVERS];
 byte currentTerm[NUM_SERVERS];
 typedef Logs {
@@ -69,6 +69,25 @@ proctype server(byte serverId) {
 	Message msg,outMsg;
 	
 	do// main loop
+:: // crash
+	(state[serverId] != crashed) -> 
+	atomic {
+		printf("SERVER %d: Crashing from state %e\n",serverId,state[serverId]);
+		state[serverId] = crashed;
+// Reset votes when crashing
+		for (i : 0 .. NUM_SERVERS - 1) {
+			votesGranted[i] = 0;
+		}
+		votedFor = NIL;
+	}
+:: // resume / recover
+	(state[serverId] == crashed) -> 
+	atomic {
+		printf("SERVER %d: Recovering from crash,becoming follower\n",serverId);
+		state[serverId] = follower;
+// Don't increment term on recovery, just rejoin with current term
+		votedFor = NIL;
+	}
 :: // timeout
 	(state[serverId] == candidate || state[serverId] == follower) -> 
 	atomic {
@@ -147,7 +166,7 @@ proctype server(byte serverId) {
 		fi
 	}
 :: // handle incoming messages
-	(toNodes[serverId]?[msg]) -> 
+	(toNodes[serverId]?[msg] && state[serverId] != crashed) -> // Only process messages if not crashed
 	atomic {
 		toNodes[serverId]?msg;
 		byte sender = msg.sender;
@@ -398,4 +417,123 @@ ltl electionSafety {
 || (state[0] == leader && state[2] == leader && currentTerm[0] == currentTerm[2])
 || (state[1] == leader && state[2] == leader && currentTerm[1] == currentTerm[2])
 )
+}
+
+// Crash Safety: No two servers can be leader in same term after crash recovery
+ltl crashSafety {
+[](
+(state[0] == crashed || state[1] == crashed || state[2] == crashed) -> 
+[]!(
+(state[0] == leader && state[1] == leader && currentTerm[0] == currentTerm[1])
+|| (state[0] == leader && state[2] == leader && currentTerm[0] == currentTerm[2])
+|| (state[1] == leader && state[2] == leader && currentTerm[1] == currentTerm[2])
+)
+)
+}
+
+// Recovery Property: A crashed server eventually becomes follower
+ltl eventualRecovery {
+[](
+(state[0] == crashed -> <> (state[0] == follower))
+&& (state[1] == crashed -> <> (state[1] == follower))
+&& (state[2] == crashed -> <> (state[2] == follower))
+)
+}
+
+// Leader Append-Only (Scalable version)
+#define LEADER_APPEND_ONLY(id,log_idx) \
+[]( \
+state[id] == leader -> \
+( \
+(logs[id].logs[log_idx] == 0) \
+|| ((logs[id].logs[log_idx] == 1) W (state[id] != leader)) \
+|| ((logs[id].logs[log_idx] == 2) W (state[id] != leader)) \
+|| ((logs[id].logs[log_idx] == 3) W (state[id] != leader)) \
+) \
+)
+
+ltl leaderAppendOnly0 { LEADER_APPEND_ONLY(0,0) && LEADER_APPEND_ONLY(0,1) }
+ltl leaderAppendOnly1 { LEADER_APPEND_ONLY(1,0) && LEADER_APPEND_ONLY(1,1) }
+ltl leaderAppendOnly2 { LEADER_APPEND_ONLY(2,0) && LEADER_APPEND_ONLY(2,1) }
+
+// Log Matching (Scalable version)
+#define LOG_MATCH(id1,id2) \
+[]( \
+(logs[id1].logs[1] != 0 && logs[id1].logs[1] == logs[id2].logs[1]) -> \
+(logs[id1].logs[0] == logs[id2].logs[0]) \
+)
+
+ltl logMatching {
+LOG_MATCH(0,1) && LOG_MATCH(0,2) && LOG_MATCH(1,2)
+}
+
+// State Machine Safety (Scalable version)
+#define STATE_MACHINE_SAFETY(id1,id2) \
+[]( \
+(commitIndex[id1] == 1 && commitIndex[id2] == 1) -> \
+(logs[id1].logs[0] == logs[id2].logs[0]) \
+)
+
+ltl stateMachineSafety {
+STATE_MACHINE_SAFETY(0,1) && STATE_MACHINE_SAFETY(0,2) && STATE_MACHINE_SAFETY(1,2)
+}
+
+// Leader Completeness (Scalable version)
+#define LEADER_COMPLETENESS(id1,id2) \
+[]( \
+(commitIndex[id1] == 1) -> \
+[]((state[id2] == leader) -> (logs[id1].logs[0] == logs[id2].logs[0])) \
+)
+
+ltl leaderCompleteness {
+LEADER_COMPLETENESS(0,1) && LEADER_COMPLETENESS(0,2) && 
+LEADER_COMPLETENESS(1,0) && LEADER_COMPLETENESS(1,2) && 
+LEADER_COMPLETENESS(2,0) && LEADER_COMPLETENESS(2,1)
+}
+
+// Crash-specific properties
+#define NO_CRASHED_LEADER(id) []!(state[id] == crashed && state[id] == leader)
+
+ltl noCrashedLeader {
+NO_CRASHED_LEADER(0) && 
+NO_CRASHED_LEADER(1) && 
+NO_CRASHED_LEADER(2)
+}
+
+#define CRASHED_NO_MESSAGES(id) []((state[id] == crashed) -> []!(len(toNodes[id]) > 0))
+
+ltl t n {
+CRASHED_NO_MESSAGES(0) && 
+CRASHED_NO_MESSAGES(1) && 
+CRASHED_NO_MESSAGES(2)
+}
+
+// Log consistency after crash and recovery
+#define RECOVERY_LOG_CONSISTENCY(id1,id2) \
+[]((state[id1] == crashed && <> (state[id1] == follower) && state[id2] == leader) -> \
+(logs[id1].logs[0] == logs[id2].logs[0] || logs[id1].logs[0] == 0))
+
+ltl recoveryLogConsistency {
+RECOVERY_LOG_CONSISTENCY(0,1) && RECOVERY_LOG_CONSISTENCY(0,2) && 
+RECOVERY_LOG_CONSISTENCY(1,0) && RECOVERY_LOG_CONSISTENCY(1,2) && 
+RECOVERY_LOG_CONSISTENCY(2,0) && RECOVERY_LOG_CONSISTENCY(2,1)
+}
+
+// Ensure there's always a majority of non-crashed nodes
+// For 3 servers, we ensure no more than 1 server is crashed at a time
+#define NODES_NOT_CRASHED(id1,id2)!((state[id1] == crashed) && (state[id2] == crashed))
+
+ltl majorityAlive {
+NODES_NOT_CRASHED(0,1) && 
+NODES_NOT_CRASHED(0,2) && 
+NODES_NOT_CRASHED(1,2)
+}
+
+// Verify that a crashed node can eventually become leader after recovery
+#define CRASHED_CAN_BECOME_LEADER(id) []((state[id] == crashed) -> <> ((state[id] == follower) && <> (state[id] == leader)))
+
+ltl eventualLeadership {
+CRASHED_CAN_BECOME_LEADER(0) || 
+CRASHED_CAN_BECOME_LEADER(1) || 
+CRASHED_CAN_BECOME_LEADER(2)
 }

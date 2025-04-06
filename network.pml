@@ -99,14 +99,8 @@ active proctype Network()
 		toMonitor!msg;
 		printf("Sending;Network -> Monitor = > Message: %d,Sender: %d,Receiver: %d\n",msg.msgID,msg.senderID,msg.receiverID);
 	:: timeout -> 
-// Terminate when all messages have been processed  
 		printf("Network has nothing to process1\n")
 		break;
-// if  
-// :: timeout -> 
-// 	printf("Network has nothing to process2\n")
-// 	break;
-// fi  
 	od  
 	printf("Network terminating\n");
 }  
@@ -117,8 +111,6 @@ active proctype Monitor()
 	MsgType msg;
 	do  
 	:: toMonitor?msg -> 
-// printf("Monitor logged message %d from Node %d to Node %d\n",
-// msg.msgID,msg.senderID,msg.receiverID)
 		printf("Recieved;Network -> Monitor = > Message: %d,Node -> Monitor = > Message: %d\n",msg.msgID,msg.msgID);
 	:: timeout -> // Terminate when all messages have been logged  
 		printf("Monitor has nothing to process so breaking")
