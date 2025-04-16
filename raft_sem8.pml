@@ -8,6 +8,15 @@
 // Message types
 mtype:MessageType = { APPEND_ENTRY,APPEND_ENTRY_RESPONSE,REQUEST_VOTE,REQUEST_VOTE_RESPONSE };
 
+
+typedef Heartbeat {
+	byte term;// term of the leader
+	byte leaderId;// id of the leader
+	byte prevLogIndex;// index of the previous log entry
+	byte prevLogTerm;// term of the previous log entry
+	byte leaderCommit;// commit index of the leader
+};
+
 // Message structures
 typedef AppendEntry {
 	byte term,leaderCommit,index,prevLogTerm;
@@ -52,6 +61,7 @@ typedef Logs {
 };
 Logs logs[NUM_SERVERS];
 byte commitIndex[NUM_SERVERS];
+byte time_out[NUM_SERVERS];// Added timeout variable for each server
 
 // If commitIndex reaches MAX_LOG, the whole system is nearly full.
 // There's no need to run further.
@@ -59,7 +69,9 @@ proctype server(byte serverId) {
 	printf("SERVER %d: Starting server process\n",serverId);
 	state[serverId] = follower;
 	byte votedFor = NIL;
-	printf("SERVER %d: Initialized as follower,term = %d,votedFor = %d\n",serverId,currentTerm[serverId],votedFor);
+	time_out[serverId] = 1;// Initialize timeout with non - zero value
+	printf("SERVER %d: Initialized as follower,term = %d,votedFor = %d,time_out = %d\n",
+	serverId,currentTerm[serverId],votedFor,time_out[serverId]);
 	
 // helpers
 	byte i;
@@ -67,6 +79,7 @@ proctype server(byte serverId) {
 	byte lastLogTerm,lastLogIndex;
 	bool logOk;
 	Message msg,outMsg;
+	byte voteCount;
 	
 	do// main loop
 :: // crash
@@ -87,11 +100,18 @@ proctype server(byte serverId) {
 		state[serverId] = follower;
 // Don't increment term on recovery, just rejoin with current term
 		votedFor = NIL;
+		time_out[serverId] = 1;// Reset timeout when recovering
 	}
-:: // timeout
-	(state[serverId] == candidate || state[serverId] == follower) -> 
+:: // timer ticks down (timeout count down)
+	(state[serverId] != crashed && state[serverId] != leader && time_out[serverId] > 0) -> 
 	atomic {
-		printf("SERVER %d: Timeout occurred,becoming candidate\n",serverId);
+		time_out[serverId] = time_out[serverId] - 1;
+		printf("SERVER %d: Timer tick,time_out now %d\n",serverId,time_out[serverId]);
+	}
+:: // timeout occurs (time_out reaches 0)
+	(state[serverId] == follower && time_out[serverId] == 0) -> 
+	atomic {
+		printf("SERVER %d: Timeout occurred (time_out = 0),becoming candidate\n",serverId);
 		state[serverId] = candidate;
 		currentTerm[serverId] = currentTerm[serverId] + 1;
 		
@@ -101,17 +121,6 @@ proctype server(byte serverId) {
 			votesGranted[i] = 0;
 		}
 		votesGranted[serverId] = 1;
-		printf("SERVER %d: Now candidate for term %d,voted for self\n",serverId,currentTerm[serverId]);
-	}
-:: // restart
-	(state[serverId] == follower) -> 
-	atomic {
-		printf("SERVER %d: Restarting as follower\n",serverId);
-	}
-:: // request vote
-	(state[serverId] == candidate) -> 
-	atomic {
-		printf("SERVER %d: Sending RequestVote as candidate for term %d\n",serverId,currentTerm[serverId]);
 		
 // Prepare RequestVote message
 		outMsg.messageType = REQUEST_VOTE;
@@ -123,15 +132,12 @@ proctype server(byte serverId) {
 		:: (logs[serverId].logs[0] == 0) -> 
 			outMsg.requestVote.lastLogTerm = 0;
 			outMsg.requestVote.lastLogIndex = 0;
-			printf("SERVER %d: Last log empty,lastLogTerm = 0,lastLogIndex = 0\n",serverId);
 		:: (logs[serverId].logs[0] != 0 && logs[serverId].logs[1] == 0) -> 
 			outMsg.requestVote.lastLogTerm = logs[serverId].logs[0];
 			outMsg.requestVote.lastLogIndex = 1;
-			printf("SERVER %d: Last log at index 0,lastLogTerm = %d,lastLogIndex = 1\n",serverId,outMsg.requestVote.lastLogTerm);
 		:: (logs[serverId].logs[0] != 0 && logs[serverId].logs[1] != 0) -> 
 			outMsg.requestVote.lastLogTerm = logs[serverId].logs[1];
 			outMsg.requestVote.lastLogIndex = 2;
-			printf("SERVER %d: Last log at index 1,lastLogTerm = %d,lastLogIndex = 2\n",serverId,outMsg.requestVote.lastLogTerm);
 		fi
 		
 // Send RequestVote to other servers
@@ -139,17 +145,19 @@ proctype server(byte serverId) {
 			if
 			:: (i != serverId) -> 
 				outMsg.receiver = i;
-				printf("SERVER %d: Sending RequestVote to server %d\n",serverId,i);
+				printf("SERVER %d: Sending RequestVote to server %d for term %d\n",serverId,i,currentTerm[serverId]);
 				toNodes[i]!outMsg;
 			:: else -> skip;
 			fi
 		}
+		
+		printf("SERVER %d: Now candidate for term %d,voted for self\n",serverId,currentTerm[serverId]);
 	}
-:: // become leader
-	(state[serverId] == candidate) -> 
+:: // candidate election completion check
+	(state[serverId] == candidate && time_out[serverId] == 0) -> 
 	atomic {
 // Count votes
-		byte voteCount = 0;
+		voteCount = 0;
 		for (i : 0 .. NUM_SERVERS - 1) {
 			if
 			:: votesGranted[i] -> voteCount++;
@@ -162,8 +170,32 @@ proctype server(byte serverId) {
 		:: (voteCount > (NUM_SERVERS / 2)) -> 
 			state[serverId] = leader;
 			printf("SERVER %d: Becoming leader for term %d with %d votes\n",serverId,currentTerm[serverId],voteCount);
-		:: else -> skip;
+// Send initial heartbeat
+			for (i : 0 .. NUM_SERVERS - 1) {
+				if
+				:: (i != serverId) -> 
+					outMsg.messageType = APPEND_ENTRY;
+					outMsg.sender = serverId;
+					outMsg.receiver = i;
+					outMsg.appendEntry.term = currentTerm[serverId];
+					outMsg.appendEntry.leaderCommit = commitIndex[serverId];
+					outMsg.appendEntry.index = NIL;// Heartbeat has no log entry
+					printf("SERVER %d: Sending initial heartbeat to server %d\n",serverId,i);
+					toNodes[i]!outMsg;
+				:: else -> skip;
+				fi
+			}
+		:: else -> 
+// Election timeout for candidate, restart election
+			printf("SERVER %d: Election timeout without majority,restarting election\n",serverId);
+			time_out[serverId] = 1;// Reset the timeout
 		fi
+	}
+:: // restart
+	(state[serverId] == follower) -> 
+	atomic {
+		printf("SERVER %d: Restarting as follower,resetting timeout\n",serverId);
+		time_out[serverId] = 1;// Reset timeout on restart
 	}
 :: // handle incoming messages
 	(toNodes[serverId]?[msg] && state[serverId] != crashed) -> // Only process messages if not crashed
@@ -183,6 +215,7 @@ proctype server(byte serverId) {
 				currentTerm[serverId] = msg.requestVote.term;
 				state[serverId] = follower;
 				votedFor = NIL;
+				time_out[serverId] = 1;// Reset timeout when term changes
 			:: (msg.requestVote.term <= currentTerm[serverId]) -> 
 				printf("SERVER %d: RequestVote term %d <= current term %d\n",serverId,msg.requestVote.term,currentTerm[serverId]);
 				skip;
@@ -240,11 +273,12 @@ proctype server(byte serverId) {
 				currentTerm[serverId] = msg.requestVoteResponse.term;
 				state[serverId] = follower;
 				votedFor = NIL;
-			:: (msg.requestVoteResponse.term == currentTerm[serverId] && msg.requestVoteResponse.voteGranted) -> 
+				time_out[serverId] = 1;// Reset timeout when term changes
+			:: (msg.requestVoteResponse.term == currentTerm[serverId] && msg.requestVoteResponse.voteGranted && state[serverId] == candidate) -> 
 				votesGranted[sender] = 1;
 				printf("SERVER %d: Vote granted by server %d\n",serverId,sender);
 			:: else -> 
-				printf("SERVER %d: Vote not granted by server %d\n",serverId,sender);
+				printf("SERVER %d: Vote not granted by server %d or no longer a candidate\n",serverId,sender);
 				skip;
 			fi
 			
@@ -260,19 +294,27 @@ proctype server(byte serverId) {
 				currentTerm[serverId] = msg.appendEntry.term;
 				state[serverId] = follower;
 				votedFor = NIL;
+				time_out[serverId] = 1;// Reset timeout for higher term
 			:: (msg.appendEntry.term <= currentTerm[serverId]) -> 
 				printf("SERVER %d: AppendEntries term %d <= current term %d\n",
 				serverId,msg.appendEntry.term,currentTerm[serverId]);
 				skip;
 			fi
 			
-// Return to follower state if needed
+// Return to follower state if needed and reset timeout
 			if
-			:: (msg.appendEntry.term == currentTerm[serverId] && state[serverId] == candidate) -> 
-				printf("SERVER %d: Stepping down from candidate to follower for term %d\n",
-				serverId,currentTerm[serverId]);
-				state[serverId] = follower;
-				votedFor = NIL;
+			:: (msg.appendEntry.term == currentTerm[serverId]) -> 
+				if
+				:: (state[serverId] == candidate) -> 
+					printf("SERVER %d: Stepping down from candidate to follower for term %d\n",
+					serverId,currentTerm[serverId]);
+					state[serverId] = follower;
+					votedFor = NIL;
+				:: else -> skip;
+				fi
+// Reset timeout on valid AppendEntries (heartbeat)
+				time_out[serverId] = 1;
+				printf("SERVER %d: Reset timeout on AppendEntries from leader\n",serverId);
 			:: else -> skip;
 			fi
 			
@@ -299,8 +341,12 @@ proctype server(byte serverId) {
 				printf("SERVER %d: Accepting AppendEntries,updating log at index %d to term %d\n",
 				serverId,msg.appendEntry.index,msg.appendEntry.term);
 				
-// Update log
-				logs[serverId].logs[msg.appendEntry.index] = msg.appendEntry.term;
+// Update log if it's not just a heartbeat
+				if
+				:: (msg.appendEntry.index != NIL) -> 
+					logs[serverId].logs[msg.appendEntry.index] = msg.appendEntry.term;
+				:: else -> skip;
+				fi
 				
 // Update commit index
 				commitIndex[serverId] = msg.appendEntry.leaderCommit;
@@ -321,6 +367,7 @@ proctype server(byte serverId) {
 				currentTerm[serverId] = msg.appendEntryResponse.term;
 				state[serverId] = follower;
 				votedFor = NIL;
+				time_out[serverId] = 1;// Reset timeout when term changes
 			:: (msg.appendEntryResponse.term < currentTerm[serverId]) -> 
 				printf("SERVER %d: Ignoring AppendEntriesResponse with lower term %d\n",
 				serverId,msg.appendEntryResponse.term);
@@ -344,7 +391,7 @@ proctype server(byte serverId) {
 			fi
 		fi
 	}
-:: // append entries (leader sends to followers)
+:: // heartbeat (leader sends to followers)
 	(state[serverId] == leader) -> 
 	atomic {
 // Send AppendEntries to all other servers
@@ -372,7 +419,7 @@ proctype server(byte serverId) {
 					serverId,outMsg.appendEntry.term,outMsg.appendEntry.prevLogTerm);
 				:: else -> 
 					outMsg.appendEntry.index = NIL;
-					printf("SERVER %d: No new logs to send to server %d\n",serverId,i);
+					printf("SERVER %d: No new logs to send to server %d,sending heartbeat\n",serverId,i);
 				fi
 				
 // Send message
@@ -502,7 +549,7 @@ NO_CRASHED_LEADER(2)
 
 #define CRASHED_NO_MESSAGES(id) []((state[id] == crashed) -> []!(len(toNodes[id]) > 0))
 
-ltl t n {
+ltl crashedNoMessages {
 CRASHED_NO_MESSAGES(0) && 
 CRASHED_NO_MESSAGES(1) && 
 CRASHED_NO_MESSAGES(2)
