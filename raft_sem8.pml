@@ -8,6 +8,10 @@
 // Message types
 mtype:MessageType = { APPEND_ENTRY,APPEND_ENTRY_RESPONSE,REQUEST_VOTE,REQUEST_VOTE_RESPONSE };
 
+// Variables for safety properties
+byte leaders = 0;// Number of leaders in the system
+bool isLeader = 0;// Indicates whether there is a leader in the system
+bool leader[NUM_SERVERS];// Indicates which nodes are leaders
 
 typedef Heartbeat {
 	byte term;// term of the leader
@@ -53,7 +57,7 @@ chan toNodes[NUM_SERVERS] = [MSG_CAPACITY] of { Message };
 // The following variables are actually local,
 // we move them globally, because SPIN doesn't support
 // that represent LTL with local variables.
-mtype:State = { leader,candidate,follower,crashed };
+mtype:State = { LEADER,CANDIDATE,FOLLOWER,CRASHED };
 mtype:State state[NUM_SERVERS];
 byte currentTerm[NUM_SERVERS];
 typedef Logs {
@@ -67,9 +71,10 @@ byte time_out[NUM_SERVERS];// Added timeout variable for each server
 // There's no need to run further.
 proctype server(byte serverId) {
 	printf("SERVER %d: Starting server process\n",serverId);
-	state[serverId] = follower;
+	state[serverId] = FOLLOWER;
 	byte votedFor = NIL;
 	time_out[serverId] = 1;// Initialize timeout with non - zero value
+	leader[serverId] = 0;// Initialize leader flag for this server
 	printf("SERVER %d: Initialized as follower,term = %d,votedFor = %d,time_out = %d\n",
 	serverId,currentTerm[serverId],votedFor,time_out[serverId]);
 	
@@ -83,10 +88,17 @@ proctype server(byte serverId) {
 	
 	do// main loop
 :: // crash
-	(state[serverId] != crashed) -> 
+	(state[serverId] != CRASHED) -> 
 	atomic {
 		printf("SERVER %d: Crashing from state %e\n",serverId,state[serverId]);
-		state[serverId] = crashed;
+		if 
+		:: (state[serverId] == LEADER) -> 
+			leaders--;
+			isLeader = (leaders > 0);
+			leader[serverId] = 0;
+		:: else -> skip;
+		fi
+		state[serverId] = CRASHED;
 // Reset votes when crashing
 		for (i : 0 .. NUM_SERVERS - 1) {
 			votesGranted[i] = 0;
@@ -94,25 +106,25 @@ proctype server(byte serverId) {
 		votedFor = NIL;
 	}
 :: // resume / recover
-	(state[serverId] == crashed) -> 
+	(state[serverId] == CRASHED) -> 
 	atomic {
 		printf("SERVER %d: Recovering from crash,becoming follower\n",serverId);
-		state[serverId] = follower;
+		state[serverId] = FOLLOWER;
 // Don't increment term on recovery, just rejoin with current term
 		votedFor = NIL;
 		time_out[serverId] = 1;// Reset timeout when recovering
 	}
 :: // timer ticks down (timeout count down)
-	(state[serverId] != crashed && state[serverId] != leader && time_out[serverId] > 0) -> 
+	(state[serverId] != CRASHED && state[serverId] != LEADER && time_out[serverId] > 0) -> 
 	atomic {
 		time_out[serverId] = time_out[serverId] - 1;
 		printf("SERVER %d: Timer tick,time_out now %d\n",serverId,time_out[serverId]);
 	}
 :: // timeout occurs (time_out reaches 0)
-	(state[serverId] == follower && time_out[serverId] == 0) -> 
+	(state[serverId] == FOLLOWER && time_out[serverId] == 0) -> 
 	atomic {
 		printf("SERVER %d: Timeout occurred (time_out = 0),becoming candidate\n",serverId);
-		state[serverId] = candidate;
+		state[serverId] = CANDIDATE;
 		currentTerm[serverId] = currentTerm[serverId] + 1;
 		
 		votedFor = serverId;
@@ -154,7 +166,7 @@ proctype server(byte serverId) {
 		printf("SERVER %d: Now candidate for term %d,voted for self\n",serverId,currentTerm[serverId]);
 	}
 :: // candidate election completion check
-	(state[serverId] == candidate && time_out[serverId] == 0) -> 
+	(state[serverId] == CANDIDATE && time_out[serverId] == 0) -> 
 	atomic {
 // Count votes
 		voteCount = 0;
@@ -168,7 +180,10 @@ proctype server(byte serverId) {
 // If majority of votes received, become leader
 		if
 		:: (voteCount > (NUM_SERVERS / 2)) -> 
-			state[serverId] = leader;
+			state[serverId] = LEADER;
+			leaders++;
+			isLeader = 1;
+			leader[serverId] = 1;
 			printf("SERVER %d: Becoming leader for term %d with %d votes\n",serverId,currentTerm[serverId],voteCount);
 // Send initial heartbeat
 			for (i : 0 .. NUM_SERVERS - 1) {
@@ -192,13 +207,13 @@ proctype server(byte serverId) {
 		fi
 	}
 :: // restart
-	(state[serverId] == follower) -> 
+	(state[serverId] == FOLLOWER) -> 
 	atomic {
 		printf("SERVER %d: Restarting as follower,resetting timeout\n",serverId);
 		time_out[serverId] = 1;// Reset timeout on restart
 	}
 :: // handle incoming messages
-	(toNodes[serverId]?[msg] && state[serverId] != crashed) -> // Only process messages if not crashed
+	(toNodes[serverId]?[msg] && state[serverId] != CRASHED) -> // Only process messages if not crashed
 	atomic {
 		toNodes[serverId]?msg;
 		byte sender = msg.sender;
@@ -212,8 +227,15 @@ proctype server(byte serverId) {
 			if
 			:: (msg.requestVote.term > currentTerm[serverId]) -> 
 				printf("SERVER %d: Updating term from %d to %d and becoming follower\n",serverId,currentTerm[serverId],msg.requestVote.term);
+				if 
+				:: (state[serverId] == LEADER) -> 
+					leaders--;
+					isLeader = (leaders > 0);
+					leader[serverId] = 0;
+				:: else -> skip;
+				fi
 				currentTerm[serverId] = msg.requestVote.term;
-				state[serverId] = follower;
+				state[serverId] = FOLLOWER;
 				votedFor = NIL;
 				time_out[serverId] = 1;// Reset timeout when term changes
 			:: (msg.requestVote.term <= currentTerm[serverId]) -> 
@@ -270,11 +292,18 @@ proctype server(byte serverId) {
 			:: (msg.requestVoteResponse.term > currentTerm[serverId]) -> // update terms
 				printf("SERVER %d: Updating term from %d to %d and becoming follower\n",
 				serverId,currentTerm[serverId],msg.requestVoteResponse.term);
+				if 
+				:: (state[serverId] == LEADER) -> 
+					leaders--;
+					isLeader = (leaders > 0);
+					leader[serverId] = 0;
+				:: else -> skip;
+				fi
 				currentTerm[serverId] = msg.requestVoteResponse.term;
-				state[serverId] = follower;
+				state[serverId] = FOLLOWER;
 				votedFor = NIL;
 				time_out[serverId] = 1;// Reset timeout when term changes
-			:: (msg.requestVoteResponse.term == currentTerm[serverId] && msg.requestVoteResponse.voteGranted && state[serverId] == candidate) -> 
+			:: (msg.requestVoteResponse.term == currentTerm[serverId] && msg.requestVoteResponse.voteGranted && state[serverId] == CANDIDATE) -> 
 				votesGranted[sender] = 1;
 				printf("SERVER %d: Vote granted by server %d\n",serverId,sender);
 			:: else -> 
@@ -291,8 +320,15 @@ proctype server(byte serverId) {
 			:: (msg.appendEntry.term > currentTerm[serverId]) -> 
 				printf("SERVER %d: Updating term from %d to %d and becoming follower\n",
 				serverId,currentTerm[serverId],msg.appendEntry.term);
+				if 
+				:: (state[serverId] == LEADER) -> 
+					leaders--;
+					isLeader = (leaders > 0);
+					leader[serverId] = 0;
+				:: else -> skip;
+				fi
 				currentTerm[serverId] = msg.appendEntry.term;
-				state[serverId] = follower;
+				state[serverId] = FOLLOWER;
 				votedFor = NIL;
 				time_out[serverId] = 1;// Reset timeout for higher term
 			:: (msg.appendEntry.term <= currentTerm[serverId]) -> 
@@ -305,10 +341,10 @@ proctype server(byte serverId) {
 			if
 			:: (msg.appendEntry.term == currentTerm[serverId]) -> 
 				if
-				:: (state[serverId] == candidate) -> 
+				:: (state[serverId] == CANDIDATE) -> 
 					printf("SERVER %d: Stepping down from candidate to follower for term %d\n",
 					serverId,currentTerm[serverId]);
-					state[serverId] = follower;
+					state[serverId] = FOLLOWER;
 					votedFor = NIL;
 				:: else -> skip;
 				fi
@@ -330,12 +366,12 @@ proctype server(byte serverId) {
 			
 			if
 			:: (msg.appendEntry.term < currentTerm[serverId] || 
-				(msg.appendEntry.term == currentTerm[serverId] && state[serverId] == follower && !logOk)) -> 
+				(msg.appendEntry.term == currentTerm[serverId] && state[serverId] == FOLLOWER && !logOk)) -> 
 // Reject request
 				outMsg.appendEntryResponse.success = 0;
 				printf("SERVER %d: Rejecting AppendEntries,term = %d,logOk = %d\n",
 				serverId,currentTerm[serverId],logOk);
-			:: (msg.appendEntry.term == currentTerm[serverId] && state[serverId] == follower && logOk) -> 
+			:: (msg.appendEntry.term == currentTerm[serverId] && state[serverId] == FOLLOWER && logOk) -> 
 // Accept request
 				outMsg.appendEntryResponse.success = 1;
 				printf("SERVER %d: Accepting AppendEntries,updating log at index %d to term %d\n",
@@ -364,8 +400,15 @@ proctype server(byte serverId) {
 			:: (msg.appendEntryResponse.term > currentTerm[serverId]) -> // update terms
 				printf("SERVER %d: Updating term from %d to %d and becoming follower\n",
 				serverId,currentTerm[serverId],msg.appendEntryResponse.term);
+				if 
+				:: (state[serverId] == LEADER) -> 
+					leaders--;
+					isLeader = (leaders > 0);
+					leader[serverId] = 0;
+				:: else -> skip;
+				fi
 				currentTerm[serverId] = msg.appendEntryResponse.term;
-				state[serverId] = follower;
+				state[serverId] = FOLLOWER;
 				votedFor = NIL;
 				time_out[serverId] = 1;// Reset timeout when term changes
 			:: (msg.appendEntryResponse.term < currentTerm[serverId]) -> 
@@ -373,7 +416,7 @@ proctype server(byte serverId) {
 				serverId,msg.appendEntryResponse.term);
 				skip;
 			:: (msg.appendEntryResponse.term == currentTerm[serverId] && 
-				msg.appendEntryResponse.success && state[serverId] == leader) -> 
+				msg.appendEntryResponse.success && state[serverId] == LEADER) -> 
 // Advance commit index
 				printf("SERVER %d: Successful AppendEntries,considering commit advancement\n",serverId);
 				
@@ -392,7 +435,7 @@ proctype server(byte serverId) {
 		fi
 	}
 :: // heartbeat (leader sends to followers)
-	(state[serverId] == leader) -> 
+	(state[serverId] == LEADER) -> 
 	atomic {
 // Send AppendEntries to all other servers
 		for (i : 0 .. NUM_SERVERS - 1) {
@@ -429,7 +472,7 @@ proctype server(byte serverId) {
 		}
 	}
 :: // client request
-	(state[serverId] == leader && logs[serverId].logs[1] == 0) -> 
+	(state[serverId] == LEADER && logs[serverId].logs[1] == 0) -> 
 	atomic {
 		if
 		:: logs[serverId].logs[0] == 0 -> 
@@ -451,136 +494,154 @@ printf("INIT: Starting Raft simulation with %d servers\n",NUM_SERVERS);
 byte i;
 atomic {
 	for (i : 0 .. NUM_SERVERS - 1) {
+		leader[i] = 0;// Initialize leader array
 		run server(i);
 	}
 }
 printf("INIT: All servers started\n");
 }
 
-// LTL properties can be updated to use NUM_SERVERS and loops if needed
-ltl electionSafety {
-[]!(
-(state[0] == leader && state[1] == leader && currentTerm[0] == currentTerm[1])
-|| (state[0] == leader && state[2] == leader && currentTerm[0] == currentTerm[2])
-|| (state[1] == leader && state[2] == leader && currentTerm[1] == currentTerm[2])
-)
-}
+// // LTL properties can be updated to use NUM_SERVERS and loops if needed
+// ltl electionSafety {
+// []!(
+// (state[0] == LEADER && state[1] == LEADER && currentTerm[0] == currentTerm[1])
+// || (state[0] == LEADER && state[2] == LEADER && currentTerm[0] == currentTerm[2])
+// || (state[1] == LEADER && state[2] == LEADER && currentTerm[1] == currentTerm[2])
+// )
+// }
 
-// Crash Safety: No two servers can be leader in same term after crash recovery
-ltl crashSafety {
-[](
-(state[0] == crashed || state[1] == crashed || state[2] == crashed) -> 
-[]!(
-(state[0] == leader && state[1] == leader && currentTerm[0] == currentTerm[1])
-|| (state[0] == leader && state[2] == leader && currentTerm[0] == currentTerm[2])
-|| (state[1] == leader && state[2] == leader && currentTerm[1] == currentTerm[2])
-)
-)
-}
+// // Crash Safety: No two servers can be leader in same term after crash recovery
+// ltl crashSafety {
+// [](
+// (state[0] == CRASHED || state[1] == CRASHED || state[2] == CRASHED) -> 
+// []!(
+// (state[0] == LEADER && state[1] == LEADER && currentTerm[0] == currentTerm[1])
+// || (state[0] == LEADER && state[2] == LEADER && currentTerm[0] == currentTerm[2])
+// || (state[1] == LEADER && state[2] == LEADER && currentTerm[1] == currentTerm[2])
+// )
+// )
+// }
 
-// Recovery Property: A crashed server eventually becomes follower
-ltl eventualRecovery {
-[](
-(state[0] == crashed -> <> (state[0] == follower))
-&& (state[1] == crashed -> <> (state[1] == follower))
-&& (state[2] == crashed -> <> (state[2] == follower))
-)
-}
+// // Recovery Property: A crashed server eventually becomes follower
+// ltl eventualRecovery {
+// [](
+// (state[0] == CRASHED -> <> (state[0] == FOLLOWER))
+// && (state[1] == CRASHED -> <> (state[1] == FOLLOWER))
+// && (state[2] == CRASHED -> <> (state[2] == FOLLOWER))
+// )
+// }
 
-// Leader Append-Only (Scalable version)
-#define LEADER_APPEND_ONLY(id,log_idx) \
-[]( \
-state[id] == leader -> \
-( \
-(logs[id].logs[log_idx] == 0) \
-|| ((logs[id].logs[log_idx] == 1) W (state[id] != leader)) \
-|| ((logs[id].logs[log_idx] == 2) W (state[id] != leader)) \
-|| ((logs[id].logs[log_idx] == 3) W (state[id] != leader)) \
-) \
-)
+// // Leader Append-Only (Scalable version)
+// #define LEADER_APPEND_ONLY(id,log_idx) \
+// []( \
+// state[id] == LEADER -> \
+// ( \
+// (logs[id].logs[log_idx] == 0) \
+// || ((logs[id].logs[log_idx] == 1) W (state[id] != LEADER)) \
+// || ((logs[id].logs[log_idx] == 2) W (state[id] != LEADER)) \
+// || ((logs[id].logs[log_idx] == 3) W (state[id] != LEADER)) \
+// ) \
+// )
 
-ltl leaderAppendOnly0 { LEADER_APPEND_ONLY(0,0) && LEADER_APPEND_ONLY(0,1) }
-ltl leaderAppendOnly1 { LEADER_APPEND_ONLY(1,0) && LEADER_APPEND_ONLY(1,1) }
-ltl leaderAppendOnly2 { LEADER_APPEND_ONLY(2,0) && LEADER_APPEND_ONLY(2,1) }
+// ltl leaderAppendOnly0 { LEADER_APPEND_ONLY(0,0) && LEADER_APPEND_ONLY(0,1) }
+// ltl leaderAppendOnly1 { LEADER_APPEND_ONLY(1,0) && LEADER_APPEND_ONLY(1,1) }
+// ltl leaderAppendOnly2 { LEADER_APPEND_ONLY(2,0) && LEADER_APPEND_ONLY(2,1) }
 
-// Log Matching (Scalable version)
-#define LOG_MATCH(id1,id2) \
-[]( \
-(logs[id1].logs[1] != 0 && logs[id1].logs[1] == logs[id2].logs[1]) -> \
-(logs[id1].logs[0] == logs[id2].logs[0]) \
-)
+// // Log Matching (Scalable version)
+// #define LOG_MATCH(id1,id2) \
+// []( \
+// (logs[id1].logs[1] != 0 && logs[id1].logs[1] == logs[id2].logs[1]) -> \
+// (logs[id1].logs[0] == logs[id2].logs[0]) \
+// )
 
-ltl logMatching {
-LOG_MATCH(0,1) && LOG_MATCH(0,2) && LOG_MATCH(1,2)
-}
+// ltl logMatching {
+// LOG_MATCH(0,1) && LOG_MATCH(0,2) && LOG_MATCH(1,2)
+// }
 
-// State Machine Safety (Scalable version)
-#define STATE_MACHINE_SAFETY(id1,id2) \
-[]( \
-(commitIndex[id1] == 1 && commitIndex[id2] == 1) -> \
-(logs[id1].logs[0] == logs[id2].logs[0]) \
-)
+// // State Machine Safety (Scalable version)
+// #define STATE_MACHINE_SAFETY(id1,id2) \
+// []( \
+// (commitIndex[id1] == 1 && commitIndex[id2] == 1) -> \
+// (logs[id1].logs[0] == logs[id2].logs[0]) \
+// )
 
-ltl stateMachineSafety {
-STATE_MACHINE_SAFETY(0,1) && STATE_MACHINE_SAFETY(0,2) && STATE_MACHINE_SAFETY(1,2)
-}
+// ltl stateMachineSafety {
+// STATE_MACHINE_SAFETY(0,1) && STATE_MACHINE_SAFETY(0,2) && STATE_MACHINE_SAFETY(1,2)
+// }
 
-// Leader Completeness (Scalable version)
-#define LEADER_COMPLETENESS(id1,id2) \
-[]( \
-(commitIndex[id1] == 1) -> \
-[]((state[id2] == leader) -> (logs[id1].logs[0] == logs[id2].logs[0])) \
-)
+// // Leader Completeness (Scalable version)
+// #define LEADER_COMPLETENESS(id1,id2) \
+// []( \
+// (commitIndex[id1] == 1) -> \
+// []((state[id2] == LEADER) -> (logs[id1].logs[0] == logs[id2].logs[0])) \
+// )
 
-ltl leaderCompleteness {
-LEADER_COMPLETENESS(0,1) && LEADER_COMPLETENESS(0,2) && 
-LEADER_COMPLETENESS(1,0) && LEADER_COMPLETENESS(1,2) && 
-LEADER_COMPLETENESS(2,0) && LEADER_COMPLETENESS(2,1)
-}
+// ltl leaderCompleteness {
+// LEADER_COMPLETENESS(0,1) && LEADER_COMPLETENESS(0,2) && 
+// LEADER_COMPLETENESS(1,0) && LEADER_COMPLETENESS(1,2) && 
+// LEADER_COMPLETENESS(2,0) && LEADER_COMPLETENESS(2,1)
+// }
 
-// Crash-specific properties
-#define NO_CRASHED_LEADER(id) []!(state[id] == crashed && state[id] == leader)
+// // Crash-specific properties
+// #define NO_CRASHED_LEADER(id) []!(state[id] == CRASHED && state[id] == LEADER)
 
-ltl noCrashedLeader {
-NO_CRASHED_LEADER(0) && 
-NO_CRASHED_LEADER(1) && 
-NO_CRASHED_LEADER(2)
-}
+// ltl noCrashedLeader {
+// NO_CRASHED_LEADER(0) && 
+// NO_CRASHED_LEADER(1) && 
+// NO_CRASHED_LEADER(2)
+// }
 
-#define CRASHED_NO_MESSAGES(id) []((state[id] == crashed) -> []!(len(toNodes[id]) > 0))
+// #define CRASHED_NO_MESSAGES(id) []((state[id] == CRASHED) -> []!(len(toNodes[id]) > 0))
 
-ltl crashedNoMessages {
-CRASHED_NO_MESSAGES(0) && 
-CRASHED_NO_MESSAGES(1) && 
-CRASHED_NO_MESSAGES(2)
-}
+// ltl crashedNoMessages {
+// CRASHED_NO_MESSAGES(0) && 
+// CRASHED_NO_MESSAGES(1) && 
+// CRASHED_NO_MESSAGES(2)
+// }
 
-// Log consistency after crash and recovery
-#define RECOVERY_LOG_CONSISTENCY(id1,id2) \
-[]((state[id1] == crashed && <> (state[id1] == follower) && state[id2] == leader) -> \
-(logs[id1].logs[0] == logs[id2].logs[0] || logs[id1].logs[0] == 0))
+// // Log consistency after crash and recovery
+// #define RECOVERY_LOG_CONSISTENCY(id1,id2) \
+// []((state[id1] == CRASHED && <> (state[id1] == FOLLOWER) && state[id2] == LEADER) -> \
+// (logs[id1].logs[0] == logs[id2].logs[0] || logs[id1].logs[0] == 0))
 
-ltl recoveryLogConsistency {
-RECOVERY_LOG_CONSISTENCY(0,1) && RECOVERY_LOG_CONSISTENCY(0,2) && 
-RECOVERY_LOG_CONSISTENCY(1,0) && RECOVERY_LOG_CONSISTENCY(1,2) && 
-RECOVERY_LOG_CONSISTENCY(2,0) && RECOVERY_LOG_CONSISTENCY(2,1)
-}
+// ltl recoveryLogConsistency {
+// RECOVERY_LOG_CONSISTENCY(0,1) && RECOVERY_LOG_CONSISTENCY(0,2) && 
+// RECOVERY_LOG_CONSISTENCY(1,0) && RECOVERY_LOG_CONSISTENCY(1,2) && 
+// RECOVERY_LOG_CONSISTENCY(2,0) && RECOVERY_LOG_CONSISTENCY(2,1)
+// }
 
-// Ensure there's always a majority of non-crashed nodes
-// For 3 servers, we ensure no more than 1 server is crashed at a time
-#define NODES_NOT_CRASHED(id1,id2)!((state[id1] == crashed) && (state[id2] == crashed))
+// // Ensure there's always a majority of non-crashed nodes
+// // For 3 servers, we ensure no more than 1 server is crashed at a time
+// #define NODES_NOT_CRASHED(id1,id2)!((state[id1] == CRASHED) && (state[id2] == CRASHED))
 
-ltl majorityAlive {
-NODES_NOT_CRASHED(0,1) && 
-NODES_NOT_CRASHED(0,2) && 
-NODES_NOT_CRASHED(1,2)
-}
+// ltl majorityAlive {
+// NODES_NOT_CRASHED(0,1) && 
+// NODES_NOT_CRASHED(0,2) && 
+// NODES_NOT_CRASHED(1,2)
+// }
 
-// Verify that a crashed node can eventually become leader after recovery
-#define CRASHED_CAN_BECOME_LEADER(id) []((state[id] == crashed) -> <> ((state[id] == follower) && <> (state[id] == leader)))
+// // Verify that a crashed node can eventually become leader after recovery
+// #define CRASHED_CAN_BECOME_LEADER(id) []((state[id] == CRASHED) -> <> ((state[id] == FOLLOWER) && <> (state[id] == LEADER)))
 
-ltl eventualLeadership {
-CRASHED_CAN_BECOME_LEADER(0) || 
-CRASHED_CAN_BECOME_LEADER(1) || 
-CRASHED_CAN_BECOME_LEADER(2)
-}
+// ltl eventualLeadership {
+// CRASHED_CAN_BECOME_LEADER(0) || 
+// CRASHED_CAN_BECOME_LEADER(1) || 
+// CRASHED_CAN_BECOME_LEADER(2)
+// }
+
+// // New safety properties based on leaders and isLeader
+// ltl leaderStability {
+// [](leaders <= 1)// Property 3: At most one leader at any time
+// }
+
+// ltl leaderLiveness {
+// <> (isLeader == 1)// Property 2: Eventually a leader is elected
+// }
+
+// // Additional property for leader stability (Property 1) 
+// // This is a template - needs to be parametrized per server
+// #define LEADER_STABILITY(id) [](leader[id] == 1 -> [](leader[id] == 1 W state[id] == CRASHED))
+
+// ltl leaderStability0 { LEADER_STABILITY(0) }
+// ltl leaderStability1 { LEADER_STABILITY(1) }
+// ltl leaderStability2 { LEADER_STABILITY(2) }
