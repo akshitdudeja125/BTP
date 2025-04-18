@@ -373,13 +373,13 @@ run server(2);
 printf("INIT: All servers started\n");
 }
 
-// ltl electionSafety {
-// always!(
-// (state[0] == leader && state[1] == leader && currentTerm[0] == currentTerm[1])
-// || (state[0] == leader && state[2] == leader && currentTerm[0] == currentTerm[2])
-// || (state[1] == leader && state[2] == leader && currentTerm[1] == currentTerm[2])
-// )
-// }
+ltl electionSafety {
+always!(
+(state[0] == leader && state[1] == leader && currentTerm[0] == currentTerm[1])
+|| (state[0] == leader && state[2] == leader && currentTerm[0] == currentTerm[2])
+|| (state[1] == leader && state[2] == leader && currentTerm[1] == currentTerm[2])
+)
+}
 
 // // for scalability of SPIN, we split the huge complete formula into small formulas
 // ltl leaderAppendOnly00 {

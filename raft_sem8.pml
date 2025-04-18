@@ -1,4 +1,4 @@
-#define MAX_TERM 3// 1 to 3
+#define MAX_TERM 10// 1 to 3
 #define MAX_LOG 2// 0 to 1
 #define NUM_SERVERS 3// Number of servers in the system
 #define MSG_CAPACITY 10// Capacity of message channels
@@ -12,6 +12,7 @@ mtype:MessageType = { APPEND_ENTRY,APPEND_ENTRY_RESPONSE,REQUEST_VOTE,REQUEST_VO
 byte leaders = 0;// Number of leaders in the system
 bool isLeader = 0;// Indicates whether there is a leader in the system
 bool leader[NUM_SERVERS];// Indicates which nodes are leaders
+byte connect[NUM_SERVERS];// Number of network connections for each node
 
 typedef Heartbeat {
 	byte term;// term of the leader
@@ -75,6 +76,7 @@ proctype server(byte serverId) {
 	byte votedFor = NIL;
 	time_out[serverId] = 1;// Initialize timeout with non - zero value
 	leader[serverId] = 0;// Initialize leader flag for this server
+	connect[serverId] = NUM_SERVERS - 1;// Initialize with connections to all other servers
 	printf("SERVER %d: Initialized as follower,term = %d,votedFor = %d,time_out = %d\n",
 	serverId,currentTerm[serverId],votedFor,time_out[serverId]);
 	
@@ -99,6 +101,7 @@ proctype server(byte serverId) {
 		:: else -> skip;
 		fi
 		state[serverId] = CRASHED;
+		connect[serverId] = 0;// Reset connections when crashed
 // Reset votes when crashing
 		for (i : 0 .. NUM_SERVERS - 1) {
 			votesGranted[i] = 0;
@@ -113,6 +116,7 @@ proctype server(byte serverId) {
 // Don't increment term on recovery, just rejoin with current term
 		votedFor = NIL;
 		time_out[serverId] = 1;// Reset timeout when recovering
+		connect[serverId] = NUM_SERVERS - 1;// Restore connections on recovery
 	}
 :: // timer ticks down (timeout count down)
 	(state[serverId] != CRASHED && state[serverId] != LEADER && time_out[serverId] > 0) -> 
@@ -419,7 +423,7 @@ proctype server(byte serverId) {
 				msg.appendEntryResponse.success && state[serverId] == LEADER) -> 
 // Advance commit index
 				printf("SERVER %d: Successful AppendEntries,considering commit advancement\n",serverId);
-				
+				connect[serverId]++;// Increment connection count for successful communication
 				if
 				:: (commitIndex[serverId] == 0 && logs[sender].logs[0] == logs[serverId].logs[0]) -> 
 					commitIndex[serverId] = 1;
@@ -495,6 +499,7 @@ byte i;
 atomic {
 	for (i : 0 .. NUM_SERVERS - 1) {
 		leader[i] = 0;// Initialize leader array
+		connect[i] = 0;// Initialize connection counts
 		run server(i);
 	}
 }
@@ -502,33 +507,26 @@ printf("INIT: All servers started\n");
 }
 
 // // LTL properties can be updated to use NUM_SERVERS and loops if needed
+
+// #define ELECTION_SAFETY(id1,id2) []((state[id1] == LEADER && state[id2] == LEADER && currentTerm[id1] == currentTerm[id2]) || (state[id1] == LEADER && state[id2] == LEADER && currentTerm[id1] == currentTerm[id2]))
+
 // ltl electionSafety {
-// []!(
-// (state[0] == LEADER && state[1] == LEADER && currentTerm[0] == currentTerm[1])
-// || (state[0] == LEADER && state[2] == LEADER && currentTerm[0] == currentTerm[2])
-// || (state[1] == LEADER && state[2] == LEADER && currentTerm[1] == currentTerm[2])
-// )
+// ELECTION_SAFETY(0,1) && ELECTION_SAFETY(0,2) && ELECTION_SAFETY(1,2)
 // }
 
 // // Crash Safety: No two servers can be leader in same term after crash recovery
+
+// #define CRASH_SAFETY(id1,id2) []((state[id1] == CRASHED && state[id2] == CRASHED) -> []!(state[id1] == LEADER && state[id2] == LEADER && currentTerm[id1] == currentTerm[id2]))
+
 // ltl crashSafety {
-// [](
-// (state[0] == CRASHED || state[1] == CRASHED || state[2] == CRASHED) -> 
-// []!(
-// (state[0] == LEADER && state[1] == LEADER && currentTerm[0] == currentTerm[1])
-// || (state[0] == LEADER && state[2] == LEADER && currentTerm[0] == currentTerm[2])
-// || (state[1] == LEADER && state[2] == LEADER && currentTerm[1] == currentTerm[2])
-// )
-// )
+// CRASH_SAFETY(0,1) && CRASH_SAFETY(0,2) && CRASH_SAFETY(1,2)
 // }
+
+// #define EVENTUAL_RECOVERY(id) []((state[id] == CRASHED -> <> (state[id] == FOLLOWER)))
 
 // // Recovery Property: A crashed server eventually becomes follower
 // ltl eventualRecovery {
-// [](
-// (state[0] == CRASHED -> <> (state[0] == FOLLOWER))
-// && (state[1] == CRASHED -> <> (state[1] == FOLLOWER))
-// && (state[2] == CRASHED -> <> (state[2] == FOLLOWER))
-// )
+// EVENTUAL_RECOVERY(0) && EVENTUAL_RECOVERY(1) && EVENTUAL_RECOVERY(2)
 // }
 
 // // Leader Append-Only (Scalable version)
@@ -629,19 +627,17 @@ printf("INIT: All servers started\n");
 // CRASHED_CAN_BECOME_LEADER(2)
 // }
 
-// // New safety properties based on leaders and isLeader
-// ltl leaderStability {
-// [](leaders <= 1)// Property 3: At most one leader at any time
-// }
+// // New properties based on the requirements
 
-// ltl leaderLiveness {
-// <> (isLeader == 1)// Property 2: Eventually a leader is elected
-// }
+// // Property 1: Stability - Leader remains stable when it has enough connections
+// #define LEADER_STABILITY(id) []((leader[id] == 1 && connect[id] >= NUM_SERVERS / 2) -> [](leader[id] == 1 W state[id] == CRASHED))
 
-// // Additional property for leader stability (Property 1) 
-// // This is a template - needs to be parametrized per server
-// #define LEADER_STABILITY(id) [](leader[id] == 1 -> [](leader[id] == 1 W state[id] == CRASHED))
+// ltl stability0 { LEADER_STABILITY(0) }
+// ltl stability1 { LEADER_STABILITY(1) }
+// ltl stability2 { LEADER_STABILITY(2) }
 
-// ltl leaderStability0 { LEADER_STABILITY(0) }
-// ltl leaderStability1 { LEADER_STABILITY(1) }
-// ltl leaderStability2 { LEADER_STABILITY(2) }
+// // Property 2: Liveness - Eventually a leader is elected
+ltl liveness { <> (isLeader == 1) }
+
+// // Property 3: Uniqueness - At most one leader per term
+ltl uniqueness { [](leaders <= 1) }
