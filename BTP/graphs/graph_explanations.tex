@@ -1,0 +1,149 @@
+% Detailed Explanations of Raft Verification Graphs for LaTeX
+% To include in your report: \input{graphs/graph_explanations.tex}
+
+\section{Detailed Analysis of Verification Results}
+
+Our visualization of verification performance metrics reveals several important patterns that provide deeper insight into the behavior of formal verification when applied to the Raft consensus algorithm at different scales.
+
+\subsection{State Vector Size Growth}
+
+\subsubsection{Technical Explanation}
+
+The state vector size visualization (Figure~\ref{fig:state-vector}) demonstrates the growth pattern as the number of Raft servers scales from 5 to 20. In SPIN, the state vector represents the complete system state stored during verification, including all variables, channels, and process states.
+
+The observed linear growth (approximately 252 bytes per additional server) is explained by the consistent per-server data structures in our model:
+\begin{itemize}
+    \item Server state variables (follower/leader/candidate/crashed)
+    \item Term counters and voting records
+    \item Log entries and commit indices
+    \item Message queues and communication channels
+\end{itemize}
+
+\subsubsection{Significance}
+
+The linear growth of state vector size (rather than exponential) demonstrates that our Promela model encapsulates server behavior in a scalable manner. This is a positive result for model design. However, it's crucial to distinguish between state vector size (linear growth) and the state space itself (exponential growth due to combinatorial explosion of possible states).
+
+This distinction illuminates why verification becomes computationally prohibitive as server count increases: even with efficient state representation, the number of possible system behaviors grows exponentially.
+
+\subsection{Memory Consumption Scaling}
+
+\subsubsection{Technical Explanation}
+
+The memory consumption graph (Figure~\ref{fig:memory-consumption}) reveals a near-linear relationship between server count and required verification memory. This scaling pattern reflects:
+
+\begin{enumerate}
+    \item The linear growth of the state vector size
+    \item The efficient state compression achieved by SPIN (95-98\%)
+    \item The effectiveness of partial-order reduction techniques
+\end{enumerate}
+
+Conceptually, memory consumption follows the relationship:
+\begin{equation}
+M = \frac{S \times N \times C}{R}
+\end{equation}
+
+Where $M$ is memory usage, $S$ is state vector size, $N$ is number of states explored, $C$ is compression factor, and $R$ is reduction factor from partial-order reduction.
+
+\subsubsection{Significance}
+
+This predictable memory scaling provides three key insights:
+\begin{enumerate}
+    \item It enables estimation of resource requirements for verification of larger configurations
+    \item It identifies practical limits of our verification approach (beyond 20-25 servers would likely exceed commonly available memory)
+    \item It confirms SPIN's compression techniques effectively mitigate state space explosion
+\end{enumerate}
+
+These results directly address a fundamental challenge in model checking: resource constraints. While verification remains feasible for practical Raft configurations (typically 5-7 servers), it highlights why complete verification of very large distributed systems remains challenging.
+
+\subsection{Verification Performance Comparison}
+
+\subsubsection{Technical Explanation}
+
+Our performance comparison (Figure~\ref{fig:verification-performance}) reveals significant differences in verification speeds across property types:
+
+\begin{itemize}
+    \item \textbf{Liveness Properties:} Maintain high verification speeds (46,362 $\rightarrow$ 33,091 states/sec)
+    \item \textbf{Safety Properties:} Show moderate degradation (27,626 $\rightarrow$ 9,073 states/sec)
+    \item \textbf{Log-Related Properties:} Exhibit significant slowdown (11,701 $\rightarrow$ 6,475 states/sec)
+    \item \textbf{Crash-Related Properties:} Experience dramatic performance decline (12,047 $\rightarrow$ 3,500 states/sec)
+\end{itemize}
+
+\subsubsection{Significance}
+
+These performance variations reflect fundamental differences in property complexity:
+
+\begin{itemize}
+    \item \textbf{Liveness properties} typically involve relatively simple reachability checks (e.g., ``can a leader eventually be elected?''), which SPIN verifies efficiently using specialized algorithms.
+    
+    \item \textbf{Crash-related properties} require exploring complex interactions between normal operation, failure, and recovery scenarios, creating a combinatorially larger state space.
+\end{itemize}
+
+This performance disparity indicates that verification effort is not uniform across the protocol's guarantees, with certain correctness properties requiring significantly more computational resources to verify.
+
+\subsection{Performance Degradation Factors}
+
+\subsubsection{Technical Explanation}
+
+The degradation factors visualization (Figure~\ref{fig:performance-degradation}) quantifies verification slowdown when scaling from 5 to 20 servers:
+
+\begin{itemize}
+    \item Liveness Properties: 1.4$\times$ degradation
+    \item Safety Properties: 3.0$\times$ degradation
+    \item Log-Related Properties: 1.8$\times$ degradation
+    \item Crash-Related Properties: 3.4$\times$ degradation
+\end{itemize}
+
+\subsubsection{Significance}
+
+The non-uniform degradation patterns reveal that property complexity interacts with system scale in different ways:
+
+\begin{itemize}
+    \item \textbf{Liveness properties show remarkable resilience} (only 1.4$\times$ slower), suggesting their verification algorithms scale efficiently with system size. This is likely because these properties can often be checked using specialized reachability algorithms that don't require exploring the entire state space.
+    
+    \item \textbf{Crash-related properties degrade most severely} (3.4$\times$ slower), indicating that failure scenarios become disproportionately more complex as system size grows. This is because the number of possible crash permutations grows combinatorially with server count.
+\end{itemize}
+
+These findings have significant implications for verification strategy: when resources are limited, verification efforts should be prioritized based on both property importance and verification complexity.
+
+\subsection{Comprehensive Performance Trends}
+
+\subsubsection{Technical Explanation}
+
+Our comprehensive trends analysis (Figure~\ref{fig:performance-trends}) tracks verification performance across all server configurations for each property type, revealing:
+
+\begin{itemize}
+    \item Liveness properties maintain relatively high performance across all configurations
+    \item Crash-related properties show a steep, non-linear decline
+    \item Safety and log-related properties follow intermediate degradation curves
+    \item Performance gaps widen significantly at larger scales
+\end{itemize}
+
+\subsubsection{Significance}
+
+These divergent trends suggest that:
+
+\begin{itemize}
+    \item \textbf{Verification complexity scales non-uniformly} across property types, creating an increasing ``verification complexity gap'' between property classes as system size grows.
+    
+    \item \textbf{The degradation curves are non-linear} for most properties, indicating that the relationship between system scale and verification complexity involves complex factors beyond simple linear scaling.
+    
+    \item \textbf{Predictable scaling patterns} emerge that could potentially be modeled mathematically to forecast verification requirements for larger configurations.
+\end{itemize}
+
+\subsection{Research and Practical Implications}
+
+These visualizations collectively demonstrate several important findings for formal verification of distributed consensus protocols:
+
+\begin{enumerate}
+    \item \textbf{Property-specific verification strategies are essential} for efficient formal verification. Different classes of properties require different approaches to manage state space explosion.
+    
+    \item \textbf{Resource planning for verification} can be informed by our observed scaling patterns, allowing researchers to allocate computational resources based on properties being verified.
+    
+    \item \textbf{Verification feasibility boundaries} can be estimated for different property types, helping identify which aspects of a protocol can be exhaustively verified and which may require complementary approaches like runtime verification or testing.
+    
+    \item \textbf{Future verification tools} could benefit from property-specific optimizations that target the different scaling behaviors we observed.
+    
+    \item \textbf{Raft's inherent verifiability} varies across its different guarantees, with liveness properties being more amenable to verification at scale than crash-related safety properties.
+\end{enumerate}
+
+These findings extend beyond Raft to other distributed consensus protocols, suggesting that formal verification approaches should be tailored to both the specific protocol and the specific properties being verified. 

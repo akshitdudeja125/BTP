@@ -1,0 +1,225 @@
+n=5
+ BTP git:(main) ✗ spin -a raft_sem8.pml
+gcc -DVECTORSZ=20000 -DSAFETY -o pan pan.c
+./pan -m1000
+ltl heartbeatStability: (([] ((! (((state[0]==4)) && ((connect[0]>=((5/2)+1))))) || (([] ((state[0]==4))) || (((state[0]==4)) U ((state[0]==1)))))) && ([] ((! (((state[1]==4)) && ((connect[1]>=((5/2)+1))))) || (([] ((state[1]==4))) || (((state[1]==4)) U ((state[1]==1))))))) && ([] ((! (((state[2]==4)) && ((connect[2]>=((5/2)+1))))) || (([] ((state[2]==4))) || (((state[2]==4)) U ((state[2]==1))))))
+warning: never claim + accept labels requires -a flag to fully verify
+error: max search depth too small
+Depth=     999 States=    1e+06 Transitions= 5.98e+06 Memory=  1253.336 t=     11.9 R=   8e+04
+Depth=     999 States=    2e+06 Transitions= 1.18e+07 Memory=  2374.857 t=     24.3 R=   8e+04
+Depth=     999 States=    3e+06 Transitions= 1.79e+07 Memory=  3496.378 t=     38.3 R=   8e+04
+Depth=     999 States=    4e+06 Transitions= 2.48e+07 Memory=  4617.899 t=     52.1 R=   8e+04
+Depth=     999 States=    5e+06 Transitions= 3.17e+07 Memory=  5741.327 t=     66.8 R=   7e+04
+Depth=     999 States=    6e+06 Transitions= 3.68e+07 Memory=  6862.848 t=     81.7 R=   7e+04
+Depth=     999 States=    7e+06 Transitions= 4.19e+07 Memory=  7984.369 t=     99.5 R=   7e+04
+^CInterrupted
+
+(Spin Version 6.5.2 -- 6 December 2019)
+Warning: Search not completed
+        + Partial Order Reduction
+
+Full statespace search for:
+        never claim             + (heartbeatStability)
+        assertion violations    + (if within scope of claim)
+        cycle checks            - (disabled by -DSAFETY)
+        invalid end states      - (disabled by never claim)
+
+State-vector 1184 byte, depth reached 999, errors: 0
+  7757648 states, stored
+ 37783096 states, matched
+ 45540744 transitions (= stored+matched)
+ 34631270 atomic steps
+hash conflicts:   1522447 (resolved)
+
+Stats on memory usage (in Megabytes):
+ 8966.703       equivalent memory usage for states (stored*(State-vector + overhead))
+ 8712.262       actual memory usage for states (compression: 97.16%)
+                state-vector as stored = 1150 byte + 28 byte overhead
+  128.000       memory used for hash table (-w24)
+    0.054       memory used for DFS stack (-m1000)
+    5.269       memory lost to fragmentation
+ 8835.047       total actual memory usage
+
+
+
+pan: elapsed time 124 seconds
+pan: rate 62728.616 states/second
+n=10
+➜  BTP git:(main) ✗ spin -a raft_sem8.pml
+gcc -DVECTORSZ=20000 -DSAFETY -o pan pan.c
+./pan -m1000
+ltl logMatching: (([] ((! (((logs[0].logs[1]!=0)) && ((logs[0].logs[1]==logs[1].logs[1])))) || ((logs[0].logs[0]==logs[1].logs[0])))) && ([] ((! (((logs[0].logs[1]!=0)) && ((logs[0].logs[1]==logs[2].logs[1])))) || ((logs[0].logs[0]==logs[2].logs[0]))))) && ([] ((! (((logs[1].logs[1]!=0)) && ((logs[1].logs[1]==logs[2].logs[1])))) || ((logs[1].logs[0]==logs[2].logs[0]))))
+ltl heartbeatStability: (([] ((! (((state[0]==4)) && ((connect[0]>=((10/2)+1))))) || (([] ((state[0]==4))) || (((state[0]==4)) U ((state[0]==1)))))) && ([] ((! (((state[1]==4)) && ((connect[1]>=((10/2)+1))))) || (([] ((state[1]==4))) || (((state[1]==4)) U ((state[1]==1))))))) && ([] ((! (((state[2]==4)) && ((connect[2]>=((10/2)+1))))) || (([] ((state[2]==4))) || (((state[2]==4)) U ((state[2]==1))))))
+  the model contains 2 never claims: heartbeatStability, logMatching
+  only one claim is used in a verification run
+  choose which one with ./pan -a -N name (defaults to -N logMatching)
+  or use e.g.: spin -search -ltl logMatching raft_sem8.pml
+warning: never claim + accept labels requires -a flag to fully verify
+pan: ltl formula logMatching
+error: max search depth too small
+^CInterrupted
+
+(Spin Version 6.5.2 -- 6 December 2019)
+Warning: Search not completed
+        + Partial Order Reduction
+
+Full statespace search for:
+        never claim             + (logMatching)
+        assertion violations    + (if within scope of claim)
+        cycle checks            - (disabled by -DSAFETY)
+        invalid end states      - (disabled by never claim)
+
+State-vector 2420 byte, depth reached 999, errors: 0
+   158585 states, stored
+   942241 states, matched
+  1100826 transitions (= stored+matched)
+    80599 atomic steps
+hash conflicts:       175 (resolved)
+
+Stats on memory usage (in Megabytes):
+  370.232       equivalent memory usage for states (stored*(State-vector + overhead))
+  360.458       actual memory usage for states (compression: 97.36%)
+                state-vector as stored = 2355 byte + 28 byte overhead
+  128.000       memory used for hash table (-w24)
+    0.054       memory used for DFS stack (-m1000)
+    1.930       memory lost to fragmentation
+  486.582       total actual memory usage
+
+
+
+pan: elapsed time 2.38 seconds
+pan: rate 66632.353 states/second
+➜  BTP git:(main) ✗ spin -a raft_sem8.pml
+gcc -DVECTORSZ=20000 -DSAFETY -o pan pan.c
+./pan -m1000
+ltl heartbeatStability: (([] ((! (((state[0]==4)) && ((connect[0]>=((10/2)+1))))) || (([] ((state[0]==4))) || (((state[0]==4)) U ((state[0]==1)))))) && ([] ((! (((state[1]==4)) && ((connect[1]>=((10/2)+1))))) || (([] ((state[1]==4))) || (((state[1]==4)) U ((state[1]==1))))))) && ([] ((! (((state[2]==4)) && ((connect[2]>=((10/2)+1))))) || (([] ((state[2]==4))) || (((state[2]==4)) U ((state[2]==1))))))
+warning: never claim + accept labels requires -a flag to fully verify
+error: max search depth too small
+Depth=     999 States=    1e+06 Transitions= 3.43e+06 Memory=  2367.227 t=     19.2 R=   5e+04
+Depth=     999 States=    2e+06 Transitions= 6.23e+06 Memory=  4602.640 t=     40.5 R=   5e+04
+Depth=     999 States=    3e+06 Transitions= 8.98e+06 Memory=  6839.960 t=     62.5 R=   5e+04
+Depth=     999 States=    4e+06 Transitions= 1.17e+07 Memory=  9075.372 t=     84.6 R=   5e+04
+Depth=     999 States=    5e+06 Transitions= 1.43e+07 Memory= 11310.785 t=      118 R=   4e+04
+^CInterrupted
+
+(Spin Version 6.5.2 -- 6 December 2019)
+Warning: Search not completed
+        + Partial Order Reduction
+
+Full statespace search for:
+        never claim             + (heartbeatStability)
+        assertion violations    + (if within scope of claim)
+        cycle checks            - (disabled by -DSAFETY)
+        invalid end states      - (disabled by never claim)
+
+State-vector 2420 byte, depth reached 999, errors: 0
+  5257013 states, stored
+  9693767 states, matched
+ 14950780 transitions (= stored+matched)
+  4705359 atomic steps
+hash conflicts:    450824 (resolved)
+
+Stats on memory usage (in Megabytes):
+12272.995       equivalent memory usage for states (stored*(State-vector + overhead))
+11761.971       actual memory usage for states (compression: 95.84%)
+                state-vector as stored = 2318 byte + 28 byte overhead
+  128.000       memory used for hash table (-w24)
+    0.054       memory used for DFS stack (-m1000)
+    5.128       memory lost to fragmentation
+11884.897       total actual memory usage
+
+
+
+pan: elapsed time 124 seconds
+pan: rate 42344.043 states/second
+n=15
+
+➜  BTP git:(main) ✗ spin -a raft_sem8.pml
+gcc -DVECTORSZ=20000 -DSAFETY -o pan pan.c
+./pan -m1000
+ltl heartbeatStability: (([] ((! (((state[0]==4)) && ((connect[0]>=((15/2)+1))))) || (([] ((state[0]==4))) || (((state[0]==4)) U ((state[0]==1)))))) && ([] ((! (((state[1]==4)) && ((connect[1]>=((15/2)+1))))) || (([] ((state[1]==4))) || (((state[1]==4)) U ((state[1]==1))))))) && ([] ((! (((state[2]==4)) && ((connect[2]>=((15/2)+1))))) || (([] ((state[2]==4))) || (((state[2]==4)) U ((state[2]==1))))))
+warning: never claim + accept labels requires -a flag to fully verify
+error: max search depth too small
+Depth=     999 States=    1e+06 Transitions= 1.06e+07 Memory=  3591.745 t=     23.1 R=   4e+04
+Depth=     999 States=    2e+06 Transitions= 2.12e+07 Memory=  7053.583      t=     50.8 R=   4e+04
+Depth=     999 States=    3e+06 Transitions= 3.17e+07 Memory= 10515.421      t=       80 R=   4e+04
+Depth=     999 States=    4e+06 Transitions= 4.21e+07 Memory= 13977.258      t=      130 R=   3e+04
+Depth=     999 States=    5e+06 Transitions= 5.21e+07 Memory= 17439.096      t=      229 R=   2e+04
+^CInterrupted
+
+(Spin Version 6.5.2 -- 6 December 2019)
+Warning: Search not completed
+        + Partial Order Reduction
+
+Full statespace search for:
+        never claim             + (heartbeatStability)
+        assertion violations    + (if within scope of claim)
+        cycle checks            - (disabled by -DSAFETY)
+        invalid end states      - (disabled by never claim)
+
+State-vector 3740 byte, depth reached 999, errors: 0
+  5040230 states, stored
+ 47578344 states, matched
+ 52618574 transitions (= stored+matched)
+ 10550501 atomic steps
+hash conflicts:    261982 (resolved)
+
+Stats on memory usage (in Megabytes):
+18111.788       equivalent memory usage for states (stored*(State-vector + overhead))
+17479.773       actual memory usage for states (compression: 96.51%)
+                state-vector as stored = 3609 byte + 28 byte overhead
+  128.000       memory used for hash table (-w24)
+    0.054       memory used for DFS stack (-m1000)
+   29.494       memory lost to fragmentation
+17578.333       total actual memory usage
+
+
+
+pan: elapsed time 231 seconds
+pan: rate 21846.604 states/second
+➜  BTP git:(main) ✗ 
+n=20
+➜  BTP git:(main) ✗ spin -a raft_sem8.pml
+gcc -DVECTORSZ=20000 -DSAFETY -o pan pan.c
+./pan -m1000
+ltl heartbeatStability: (([] ((! (((state[0]==4)) && ((connect[0]>=((20/2)+1))))) || (([] ((state[0]==4))) || (((state[0]==4)) U ((state[0]==1)))))) && ([] ((! (((state[1]==4)) && ((connect[1]>=((20/2)+1))))) || (([] ((state[1]==4))) || (((state[1]==4)) U ((state[1]==1))))))) && ([] ((! (((state[2]==4)) && ((connect[2]>=((20/2)+1))))) || (([] ((state[2]==4))) || (((state[2]==4)) U ((state[2]==1))))))
+warning: never claim + accept labels requires -a flag to fully verify
+error: max search depth too small
+Depth=     999 States=    1e+06 Transitions= 2.22e+06 Memory=  4804.819      t=     26.7 R=   4e+04
+Depth=     999 States=    2e+06 Transitions=  4.4e+06 Memory=  9479.730      t=     56.8 R=   4e+04
+Depth=     999 States=    3e+06 Transitions= 6.62e+06 Memory= 14154.642      t=     92.8 R=   3e+04
+Depth=     999 States=    4e+06 Transitions= 8.86e+06 Memory= 18829.553      t=      137 R=   3e+04
+Depth=     999 States=    5e+06 Transitions= 1.11e+07 Memory= 23504.465      t=      191 R=   3e+04
+^CInterrupted
+
+(Spin Version 6.5.2 -- 6 December 2019)
+Warning: Search not completed
+        + Partial Order Reduction
+
+Full statespace search for:
+        never claim             + (heartbeatStability)
+        assertion violations    + (if within scope of claim)
+        cycle checks            - (disabled by -DSAFETY)
+        invalid end states      - (disabled by never claim)
+
+State-vector 4984 byte, depth reached 999, errors: 0
+  5038470 states, stored
+  6150569 states, matched
+ 11189039 transitions (= stored+matched)
+  2227137 atomic steps
+hash conflicts:    231687 (resolved)
+
+Stats on memory usage (in Megabytes):
+24082.958       equivalent memory usage for states (stored*(State-vector + overhead))
+23588.038       actual memory usage for states (compression: 97.94%)
+                state-vector as stored = 4881 byte + 28 byte overhead
+  128.000       memory used for hash table (-w24)
+    0.054       memory used for DFS stack (-m1000)
+   30.429       memory lost to fragmentation
+23685.663       total actual memory usage
+
+
+
+pan: elapsed time 193 seconds
+pan: rate 26096.597 states/second
+➜  BTP git:(main) ✗ 

@@ -1,0 +1,447 @@
+n=5
+➜  BTP git:(main) ✗ spin -a raft_sem8.pml
+gcc -DVECTORSZ=20000 -DSAFETY -o pan pan.c
+./pan -m1000
+ltl eventualLeadership: (([] ((! ((state[0]==1))) || (<> (((state[0]==2)) && (<> ((state[0]==4))))))) || ([] ((! ((state[1]==1))) || (<> (((state[1]==2)) && (<> ((state[1]==4)))))))) || ([] ((! ((state[2]==1))) || (<> (((state[2]==2)) && (<> ((state[2]==4)))))))
+^C
+➜  BTP git:(main) ✗ 
+➜  BTP git:(main) ✗ spin -a raft_sem8.pml
+gcc -DVECTORSZ=20000 -DSAFETY -o pan pan.c
+./pan -m1000
+ltl majorityAlive: ((! (((state[0]==1)) && ((state[1]==1)))) && (! (((state[0]==1)) && ((state[2]==1))))) && (! (((state[1]==1)) && ((state[2]==1))))
+warning: never claim + accept labels requires -a flag to fully verify
+
+(Spin Version 6.5.2 -- 6 December 2019)
+        + Partial Order Reduction
+
+Full statespace search for:
+        never claim             + (majorityAlive)
+        assertion violations    + (if within scope of claim)
+        cycle checks            - (disabled by -DSAFETY)
+        invalid end states      - (disabled by never claim)
+
+State-vector 900 byte, depth reached 0, errors: 0
+        1 states, stored
+        0 states, matched
+        1 transitions (= stored+matched)
+        0 atomic steps
+hash conflicts:         0 (resolved)
+
+Stats on memory usage (in Megabytes):
+    0.001       equivalent memory usage for states (stored*(State-vector + overhead))
+    5.569       actual memory usage for states
+  128.000       memory used for hash table (-w24)
+    0.054       memory used for DFS stack (-m1000)
+    1.808       memory lost to fragmentation
+  131.815       total actual memory usage
+
+
+unreached in proctype server
+        raft_sem8.pml:74, state 1, "printf('SERVER %d: Starting server process\n',serverId)"
+        raft_sem8.pml:75, state 2, "state[serverId] = 2"
+        raft_sem8.pml:77, state 3, "votedFor = 10"
+        raft_sem8.pml:77, state 4, "time_out[serverId] = 1"
+        raft_sem8.pml:78, state 5, "leader[serverId] = 0"
+        raft_sem8.pml:79, state 6, "connect[serverId] = (5-1)"
+        raft_sem8.pml:80, state 7, "printf('SERVER %d: Initialized as follower,term = %d,votedFor = %d,time_out = %d\n',serverId,currentTerm[serverId],votedFor,time_out[serverId])"
+        raft_sem8.pml:85, state 8, "i = 0"
+        raft_sem8.pml:86, state 10, "lastLogTerm = 0"
+        raft_sem8.pml:87, state 11, "lastLogIndex = 0"
+        raft_sem8.pml:88, state 12, "logOk = 0"
+        raft_sem8.pml:88, state 13
+        raft_sem8.pml:89, state 14
+        raft_sem8.pml:91, state 15, "voteCount = 0"
+        raft_sem8.pml:99, state 20, "isLeader = (leaders>0)"
+        raft_sem8.pml:100, state 21, "leader[serverId] = 0"
+        raft_sem8.pml:101, state 23, "(1)"
+        raft_sem8.pml:97, state 24, "((state[serverId]==4))"
+        raft_sem8.pml:97, state 24, "else"
+        raft_sem8.pml:106, state 28, "i = 0"
+        raft_sem8.pml:106, state 31, "i = (i+1)"
+        raft_sem8.pml:109, state 37, "votedFor = 10"
+        raft_sem8.pml:95, state 38, "printf('SERVER %d: Crashing from state %e\n',serverId,state[serverId])"
+        raft_sem8.pml:117, state 42, "votedFor = 10"
+        raft_sem8.pml:118, state 43, "time_out[serverId] = 1"
+        raft_sem8.pml:119, state 44, "connect[serverId] = (5-1)"
+        raft_sem8.pml:114, state 45, "printf('SERVER %d: Recovering from crash,becoming follower\n',serverId)"
+        raft_sem8.pml:124, state 49, "time_out[serverId] = (time_out[serverId]-1)"
+        raft_sem8.pml:132, state 53, "currentTerm[serverId] = (currentTerm[serverId]+1)"
+        raft_sem8.pml:134, state 54, "votedFor = serverId"
+        raft_sem8.pml:136, state 55, "i = 0"
+        raft_sem8.pml:136, state 58, "i = (i+1)"
+        raft_sem8.pml:143, state 66, "outMsg.sender = serverId"
+        raft_sem8.pml:144, state 67, "outMsg.requestVote.term = currentTerm[serverId]"
+        raft_sem8.pml:150, state 70, "outMsg.requestVote.lastLogIndex = 0"
+        raft_sem8.pml:153, state 73, "outMsg.requestVote.lastLogIndex = 1"
+        raft_sem8.pml:156, state 76, "outMsg.requestVote.lastLogIndex = 2"
+        raft_sem8.pml:148, state 77, "((logs[serverId].logs[0]==0))"
+        raft_sem8.pml:148, state 77, "(((logs[serverId].logs[0]!=0)&&(logs[serverId].logs[1]==0)))"
+        raft_sem8.pml:148, state 77, "(((logs[serverId].logs[0]!=0)&&(logs[serverId].logs[1]!=0)))"
+        raft_sem8.pml:164, state 83, "printf('SERVER %d: Sending RequestVote to server %d for term %d\n',serverId,i,currentTerm[serverId])"
+        raft_sem8.pml:165, state 84, "toNodes[i]!outMsg.messageType,outMsg.sender,outMsg.receiver,outMsg.appendEntry.term,outMsg.appendEntry.leaderCommit,outMsg.appendEntry.index,outMsg.appendEntry.prevLogTerm,outMsg.appendEntryResponse.term,outMsg.appendEntryResponse.success,outMsg.requestVote.term,outMsg.requestVote.lastLogIndex,outMsg.requestVote.lastLogTerm,outMsg.requestVoteResponse.term,outMsg.requestVoteResponse.voteGranted"
+        raft_sem8.pml:166, state 86, "(1)"
+        raft_sem8.pml:162, state 87, "((i!=serverId))"
+        raft_sem8.pml:162, state 87, "else"
+        raft_sem8.pml:170, state 95, "printf('SERVER %d: Now candidate for term %d,voted for self\n',serverId,currentTerm[serverId])"
+        raft_sem8.pml:130, state 96, "printf('SERVER %d: Timeout occurred (time_out = 0),becoming candidate\n',serverId)"
+        raft_sem8.pml:180, state 104, "(1)"
+        raft_sem8.pml:179, state 105, "(votesGranted[i])"
+        raft_sem8.pml:179, state 105, "else"
+        raft_sem8.pml:177, state 110, "((i<=(5-1)))"
+        raft_sem8.pml:177, state 110, "else"
+        raft_sem8.pml:188, state 115, "leaders = (leaders+1)"
+        raft_sem8.pml:189, state 116, "isLeader = 1"
+        raft_sem8.pml:190, state 117, "leader[serverId] = 1"
+        raft_sem8.pml:191, state 118, "printf('SERVER %d: Becoming leader for term %d with %d votes\n',serverId,currentTerm[serverId],voteCount)"
+        raft_sem8.pml:193, state 119, "i = 0"
+        raft_sem8.pml:197, state 123, "outMsg.sender = serverId"
+        raft_sem8.pml:198, state 124, "outMsg.receiver = i"
+        raft_sem8.pml:199, state 125, "outMsg.appendEntry.term = currentTerm[serverId]"
+        raft_sem8.pml:200, state 126, "outMsg.appendEntry.leaderCommit = commitIndex[serverId]"
+        raft_sem8.pml:201, state 127, "outMsg.appendEntry.index = 10"
+        raft_sem8.pml:202, state 128, "printf('SERVER %d: Sending initial heartbeat to server %d\n',serverId,i)"
+        raft_sem8.pml:203, state 129, "toNodes[i]!outMsg.messageType,outMsg.sender,outMsg.receiver,outMsg.appendEntry.term,outMsg.appendEntry.leaderCommit,outMsg.appendEntry.index,outMsg.appendEntry.prevLogTerm,outMsg.appendEntryResponse.term,outMsg.appendEntryResponse.success,outMsg.requestVote.term,outMsg.requestVote.lastLogIndex,outMsg.requestVote.lastLogTerm,outMsg.requestVoteResponse.term,outMsg.requestVoteResponse.voteGranted"
+        raft_sem8.pml:204, state 131, "(1)"
+        raft_sem8.pml:195, state 132, "((i!=serverId))"
+        raft_sem8.pml:195, state 132, "else"
+        raft_sem8.pml:209, state 141, "printf('SERVER %d: Election timeout without majority,restarting election\n',serverId)"
+        raft_sem8.pml:186, state 143, "((voteCount>(5/2)))"
+        raft_sem8.pml:186, state 143, "else"
+        raft_sem8.pml:176, state 145, "voteCount = 0"
+        raft_sem8.pml:216, state 149, "printf('SERVER %d: Restarting as follower,resetting timeout\n',serverId)"
+        raft_sem8.pml:237, state 159, "isLeader = (leaders>0)"
+        raft_sem8.pml:238, state 160, "leader[serverId] = 0"
+        raft_sem8.pml:239, state 162, "(1)"
+        raft_sem8.pml:235, state 163, "((state[serverId]==4))"
+        raft_sem8.pml:235, state 163, "else"
+        raft_sem8.pml:243, state 167, "votedFor = 10"
+        raft_sem8.pml:244, state 168, "time_out[serverId] = 1"
+        raft_sem8.pml:254, state 176, "lastLogIndex = 0"
+        raft_sem8.pml:255, state 177, "printf('SERVER %d: My last log empty,lastLogTerm = 0,lastLogIndex = 0\n',serverId)"
+        raft_sem8.pml:258, state 180, "lastLogIndex = 1"
+        raft_sem8.pml:259, state 181, "printf('SERVER %d: My last log at index 0,lastLogTerm = %d,lastLogIndex = 1\n',serverId,lastLogTerm)"
+        raft_sem8.pml:262, state 184, "lastLogIndex = 2"
+        raft_sem8.pml:263, state 185, "printf('SERVER %d: My last log at index 1,lastLogTerm = %d,lastLogIndex = 2\n',serverId,lastLogTerm)"
+        raft_sem8.pml:252, state 186, "((logs[serverId].logs[0]==0))"
+        raft_sem8.pml:252, state 186, "(((logs[serverId].logs[0]!=0)&&(logs[serverId].logs[1]==0)))"
+        raft_sem8.pml:252, state 186, "(((logs[serverId].logs[0]!=0)&&(logs[serverId].logs[1]!=0)))"
+        raft_sem8.pml:272, state 190, "outMsg.messageType = 1"
+        raft_sem8.pml:273, state 191, "outMsg.sender = serverId"
+        raft_sem8.pml:274, state 192, "outMsg.receiver = sender"
+        raft_sem8.pml:275, state 193, "outMsg.requestVoteResponse.term = currentTerm[serverId]"
+        raft_sem8.pml:276, state 194, "outMsg.requestVoteResponse.voteGranted = voteGranted"
+        raft_sem8.pml:281, state 197, "printf('SERVER %d: Granting vote to server %d for term %d\n',serverId,sender,currentTerm[serverId])"
+        raft_sem8.pml:290, state 204, "toNodes[sender]!outMsg.messageType,outMsg.sender,outMsg.receiver,outMsg.appendEntry.term,outMsg.appendEntry.leaderCommit,outMsg.appendEntry.index,outMsg.appendEntry.prevLogTerm,outMsg.appendEntryResponse.term,outMsg.appendEntryResponse.success,outMsg.requestVote.term,outMsg.requestVote.lastLogIndex,outMsg.requestVote.lastLogTerm,outMsg.requestVoteResponse.term,outMsg.requestVoteResponse.voteGranted"
+        raft_sem8.pml:303, state 211, "isLeader = (leaders>0)"
+        raft_sem8.pml:304, state 212, "leader[serverId] = 0"
+        raft_sem8.pml:305, state 214, "(1)"
+        raft_sem8.pml:301, state 215, "((state[serverId]==4))"
+        raft_sem8.pml:301, state 215, "else"
+        raft_sem8.pml:309, state 219, "votedFor = 10"
+        raft_sem8.pml:310, state 220, "time_out[serverId] = 1"
+        raft_sem8.pml:313, state 223, "printf('SERVER %d: Vote granted by server %d\n',serverId,sender)"
+        raft_sem8.pml:314, state 224, "(1)"
+        raft_sem8.pml:316, state 226, "printf('SERVER %d: Vote not granted by server %d or no longer a candidate\n',serverId,sender)"
+        raft_sem8.pml:317, state 227, "(1)"
+        raft_sem8.pml:297, state 228, "((msg.requestVoteResponse.term>currentTerm[serverId]))"
+        raft_sem8.pml:297, state 228, "((((msg.requestVoteResponse.term==currentTerm[serverId])&&msg.requestVoteResponse.voteGranted)&&(state[serverId]==3)))"
+        raft_sem8.pml:297, state 228, "else"
+        raft_sem8.pml:332, state 236, "isLeader = (leaders>0)"
+        raft_sem8.pml:333, state 237, "leader[serverId] = 0"
+        raft_sem8.pml:334, state 239, "(1)"
+        raft_sem8.pml:330, state 240, "((state[serverId]==4))"
+        raft_sem8.pml:330, state 240, "else"
+        raft_sem8.pml:338, state 244, "votedFor = 10"
+        raft_sem8.pml:339, state 245, "time_out[serverId] = 1"
+        raft_sem8.pml:353, state 254, "state[serverId] = 2"
+        raft_sem8.pml:354, state 255, "votedFor = 10"
+        raft_sem8.pml:355, state 257, "(1)"
+        raft_sem8.pml:350, state 258, "((state[serverId]==3))"
+        raft_sem8.pml:350, state 258, "else"
+        raft_sem8.pml:360, state 263, "(1)"
+        raft_sem8.pml:348, state 264, "((msg.appendEntry.term==currentTerm[serverId]))"
+        raft_sem8.pml:348, state 264, "else"
+        raft_sem8.pml:369, state 268, "outMsg.sender = serverId"
+        raft_sem8.pml:370, state 269, "outMsg.receiver = sender"
+        raft_sem8.pml:371, state 270, "outMsg.appendEntryResponse.term = currentTerm[serverId]"
+        raft_sem8.pml:378, state 273, "printf('SERVER %d: Rejecting AppendEntries,term = %d,logOk = %d\n',serverId,currentTerm[serverId],logOk)"
+        raft_sem8.pml:383, state 276, "printf('SERVER %d: Accepting AppendEntries,updating log at index %d to term %d\n',serverId,msg.appendEntry.index,msg.appendEntry.term)"
+        raft_sem8.pml:390, state 279, "(1)"
+        raft_sem8.pml:391, state 281, "(1)"
+        raft_sem8.pml:388, state 282, "((msg.appendEntry.index!=10))"
+        raft_sem8.pml:388, state 282, "else"
+        raft_sem8.pml:375, state 287, "(((msg.appendEntry.term<currentTerm[serverId])||(((msg.appendEntry.term==currentTerm[serverId])&&(state[serverId]==2))&&!(logOk))))"
+        raft_sem8.pml:375, state 287, "((((msg.appendEntry.term==currentTerm[serverId])&&(state[serverId]==2))&&logOk))"
+        raft_sem8.pml:401, state 289, "toNodes[sender]!outMsg.messageType,outMsg.sender,outMsg.receiver,outMsg.appendEntry.term,outMsg.appendEntry.leaderCommit,outMsg.appendEntry.index,outMsg.appendEntry.prevLogTerm,outMsg.appendEntryResponse.term,outMsg.appendEntryResponse.success,outMsg.requestVote.term,outMsg.requestVote.lastLogIndex,outMsg.requestVote.lastLogTerm,outMsg.requestVoteResponse.term,outMsg.requestVoteResponse.voteGranted"
+        raft_sem8.pml:414, state 296, "isLeader = (leaders>0)"
+        raft_sem8.pml:415, state 297, "leader[serverId] = 0"
+        raft_sem8.pml:416, state 299, "(1)"
+        raft_sem8.pml:412, state 300, "((state[serverId]==4))"
+        raft_sem8.pml:412, state 300, "else"
+        raft_sem8.pml:420, state 304, "votedFor = 10"
+        raft_sem8.pml:421, state 305, "time_out[serverId] = 1"
+        raft_sem8.pml:425, state 308, "(1)"
+        raft_sem8.pml:430, state 311, "connect[serverId] = (connect[serverId]+1)"
+        raft_sem8.pml:434, state 314, "printf('SERVER %d: Advanced commitIndex to 1\n',serverId)"
+        raft_sem8.pml:435, state 315, "(1)"
+        raft_sem8.pml:437, state 317, "printf('SERVER %d: Cannot advance commitIndex further\n',serverId)"
+        raft_sem8.pml:438, state 318, "(1)"
+        raft_sem8.pml:432, state 319, "(((commitIndex[serverId]==0)&&(logs[sender].logs[0]==logs[serverId].logs[0])))"
+        raft_sem8.pml:432, state 319, "else"
+        raft_sem8.pml:441, state 322, "printf('SERVER %d: AppendEntriesResponse not successful or not leader\n',serverId)"
+        raft_sem8.pml:442, state 323, "(1)"
+        raft_sem8.pml:408, state 324, "((msg.appendEntryResponse.term>currentTerm[serverId]))"
+        raft_sem8.pml:408, state 324, "((msg.appendEntryResponse.term<currentTerm[serverId]))"
+        raft_sem8.pml:408, state 324, "((((msg.appendEntryResponse.term==currentTerm[serverId])&&msg.appendEntryResponse.success)&&(state[serverId]==4)))"
+        raft_sem8.pml:408, state 324, "else"
+        raft_sem8.pml:227, state 326, "((msg.messageType==2))"
+        raft_sem8.pml:227, state 326, "((msg.messageType==1))"
+        raft_sem8.pml:227, state 326, "((msg.messageType==4))"
+        raft_sem8.pml:227, state 326, "((msg.messageType==3))"
+        raft_sem8.pml:222, state 328, "toNodes[serverId]?msg.messageType,msg.sender,msg.receiver,msg.appendEntry.term,msg.appendEntry.leaderCommit,msg.appendEntry.index,msg.appendEntry.prevLogTerm,msg.appendEntryResponse.term,msg.appendEntryResponse.success,msg.requestVote.term,msg.requestVote.lastLogIndex,msg.requestVote.lastLogTerm,msg.requestVoteResponse.term,msg.requestVoteResponse.voteGranted"
+        raft_sem8.pml:455, state 334, "outMsg.sender = serverId"
+        raft_sem8.pml:456, state 335, "outMsg.receiver = i"
+        raft_sem8.pml:457, state 336, "outMsg.appendEntry.term = currentTerm[serverId]"
+        raft_sem8.pml:458, state 337, "outMsg.appendEntry.leaderCommit = commitIndex[serverId]"
+        raft_sem8.pml:460, state 338, "printf('SERVER %d: Leader sending AppendEntries to server %d\n',serverId,i)"
+        raft_sem8.pml:465, state 341, "printf('SERVER %d: Sending log at index 0,term = %d\n',serverId,outMsg.appendEntry.term)"
+        raft_sem8.pml:469, state 344, "outMsg.appendEntry.prevLogTerm = logs[i].logs[0]"
+        raft_sem8.pml:470, state 345, "printf('SERVER %d: Sending log at index 1,term = %d,prevLogTerm = %d\n',serverId,outMsg.appendEntry.term,outMsg.appendEntry.prevLogTerm)"
+        raft_sem8.pml:473, state 347, "outMsg.appendEntry.index = 10"
+        raft_sem8.pml:463, state 349, "((logs[serverId].logs[0]!=logs[i].logs[0]))"
+        raft_sem8.pml:463, state 349, "((((logs[serverId].logs[1]!=0)&&(logs[serverId].logs[0]==logs[i].logs[0]))&&(logs[serverId].logs[1]!=logs[i].logs[1])))"
+        raft_sem8.pml:463, state 349, "else"
+        raft_sem8.pml:478, state 351, "toNodes[i]!outMsg.messageType,outMsg.sender,outMsg.receiver,outMsg.appendEntry.term,outMsg.appendEntry.leaderCommit,outMsg.appendEntry.index,outMsg.appendEntry.prevLogTerm,outMsg.appendEntryResponse.term,outMsg.appendEntryResponse.success,outMsg.requestVote.term,outMsg.requestVote.lastLogIndex,outMsg.requestVote.lastLogTerm,outMsg.requestVoteResponse.term,outMsg.requestVoteResponse.voteGranted"
+        raft_sem8.pml:479, state 353, "(1)"
+        raft_sem8.pml:452, state 354, "((i!=serverId))"
+        raft_sem8.pml:452, state 354, "else"
+        raft_sem8.pml:450, state 363, "i = 0"
+        raft_sem8.pml:492, state 367, "printf('SERVER %d: Client request,adding entry at index 0 with term %d\n',serverId,currentTerm[serverId])"
+        raft_sem8.pml:496, state 370, "printf('SERVER %d: Client request,adding entry at index 1 with term %d\n',serverId,currentTerm[serverId])"
+        raft_sem8.pml:523, state 390, "(1)"
+        raft_sem8.pml:522, state 391, "(votesGranted[i])"
+        raft_sem8.pml:522, state 391, "else"
+        raft_sem8.pml:520, state 396, "((i<=(5-1)))"
+        raft_sem8.pml:520, state 396, "else"
+        raft_sem8.pml:530, state 401, "(1)"
+        raft_sem8.pml:531, state 403, "(1)"
+        raft_sem8.pml:528, state 404, "((voteCount>(5/2)))"
+        raft_sem8.pml:528, state 404, "else"
+        raft_sem8.pml:519, state 406, "voteCount = 0"
+        raft_sem8.pml:93, state 407, "((state[serverId]!=1))"
+        raft_sem8.pml:93, state 407, "((state[serverId]==1))"
+        raft_sem8.pml:93, state 407, "((((state[serverId]!=1)&&(state[serverId]!=4))&&(time_out[serverId]>0)))"
+        raft_sem8.pml:93, state 407, "(((state[serverId]==2)&&(time_out[serverId]==0)))"
+        raft_sem8.pml:93, state 407, "(((state[serverId]==3)&&(time_out[serverId]==0)))"
+        raft_sem8.pml:93, state 407, "((state[serverId]==2))"
+        raft_sem8.pml:93, state 407, "((toNodes[serverId]?[msg.messageType,msg.sender,msg.receiver,msg.appendEntry.term,msg.appendEntry.leaderCommit,msg.appendEntry.index,msg.appendEntry.prevLogTerm,msg.appendEntryResponse.term,msg.appendEntryResponse.success,msg.requestVote.term,msg.requestVote.lastLogIndex,msg.requestVote.lastLogTerm,msg.requestVoteResponse.term,msg.requestVoteResponse.voteGranted]&&(state[serverId]!=1)))"
+        raft_sem8.pml:93, state 407, "((state[serverId]==4))"
+        raft_sem8.pml:93, state 407, "(((state[serverId]==4)&&(logs[serverId].logs[1]==0)))"
+        raft_sem8.pml:93, state 407, "(((state[serverId]==4)&&(commitIndex[serverId]>0)))"
+        raft_sem8.pml:93, state 407, "(((state[serverId]==2)&&(commitIndex[serverId]>0)))"
+        raft_sem8.pml:93, state 407, "((state[serverId]==3))"
+        raft_sem8.pml:535, state 410, "printf('SERVER %d: Process terminated\n',serverId)"
+        raft_sem8.pml:536, state 411, "-end-"
+        (161 of 411 states)
+unreached in init
+        raft_sem8.pml:544, state 6, "connect[i] = 0"
+        raft_sem8.pml:545, state 7, "(run server(i))"
+        raft_sem8.pml:542, state 8, "i = (i+1)"
+        raft_sem8.pml:542, state 14, "i = 0"
+        raft_sem8.pml:548, state 15, "printf('INIT: All servers started\n')"
+        raft_sem8.pml:552, state 17, "-end-"
+        (6 of 17 states)
+unreached in claim majorityAlive
+        _spin_nvr.tmp:8, state 8, "-end-"
+        (1 of 8 states)
+
+pan: elapsed time 0.05 seconds
+pan: rate        20 states/second
+➜  BTP git:(main) ✗ spin -a raft_sem8.pml
+gcc -DVECTORSZ=20000 -DSAFETY -o pan pan.c
+./pan -m1000
+ltl recoveryLogConsistency: ((((([] ((! ((((state[0]==1)) && (<> ((state[0]==2)))) && ((state[1]==4)))) || (((logs[0].logs[0]==logs[1].logs[0])) || ((logs[0].logs[0]==0))))) && ([] ((! ((((state[0]==1)) && (<> ((state[0]==2)))) && ((state[2]==4)))) || (((logs[0].logs[0]==logs[2].logs[0])) || ((logs[0].logs[0]==0)))))) && ([] ((! ((((state[1]==1)) && (<> ((state[1]==2)))) && ((state[0]==4)))) || (((logs[1].logs[0]==logs[0].logs[0])) || ((logs[1].logs[0]==0)))))) && ([] ((! ((((state[1]==1)) && (<> ((state[1]==2)))) && ((state[2]==4)))) || (((logs[1].logs[0]==logs[2].logs[0])) || ((logs[1].logs[0]==0)))))) && ([] ((! ((((state[2]==1)) && (<> ((state[2]==2)))) && ((state[0]==4)))) || (((logs[2].logs[0]==logs[0].logs[0])) || ((logs[2].logs[0]==0)))))) && ([] ((! ((((state[2]==1)) && (<> ((state[2]==2)))) && ((state[1]==4)))) || (((logs[2].logs[0]==logs[1].logs[0])) || ((logs[2].logs[0]==0)))))
+warning: never claim + accept labels requires -a flag to fully verify
+error: max search depth too small
+Depth=     999 States=    1e+06 Transitions= 5.98e+06 Memory=  1245.706        t=     38.9 R=   3e+04
+Depth=     999 States=    2e+06 Transitions= 1.18e+07 Memory=  2359.598        t=       83 R=   2e+04
+Depth=     999 States=    3e+06 Transitions= 1.79e+07 Memory=  3473.490        t=      129 R=   2e+04
+Depth=     999 States=    4e+06 Transitions= 2.48e+07 Memory=  4587.381    t=      180 R=   2e+04
+Depth=     999 States=    5e+06 Transitions= 3.17e+07 Memory=  5701.273        t=      233 R=   2e+04
+^CInterrupted
+
+(Spin Version 6.5.2 -- 6 December 2019)
+Warning: Search not completed
+        + Partial Order Reduction
+
+Full statespace search for:
+        never claim             + (recoveryLogConsistency)
+        assertion violations    + (if within scope of claim)
+        cycle checks            - (disabled by -DSAFETY)
+        invalid end states      - (disabled by never claim)
+
+State-vector 1184 byte, depth reached 999, errors: 0
+  5095816 states, stored
+ 27167128 states, matched
+ 32262944 transitions (= stored+matched)
+ 21188317 atomic steps
+hash conflicts:    338758 (resolved)
+
+Stats on memory usage (in Megabytes):
+ 5890.016       equivalent memory usage for states (stored*(State-vector + overhead))
+ 5682.897       actual memory usage for states (compression: 96.48%)
+                state-vector as stored = 1141 byte + 28 byte overhead
+  128.000       memory used for hash table (-w24)
+    0.054       memory used for DFS stack (-m1000)
+    2.866       memory lost to fragmentation
+ 5808.084       total actual memory usage
+
+
+
+pan: elapsed time 238 seconds
+pan: rate 21421.793 states/second
+➜  BTP git:(main) ✗ 
+
+n=10
+
+➜  BTP git:(main) ✗ spin -a raft_sem8.pml
+gcc -DVECTORSZ=20000 -DSAFETY -o pan pan.c
+./pan -m1000
+ltl recoveryLogConsistency: ((((([] ((! ((((state[0]==1)) && (<> ((state[0]==2)))) && ((state[1]==4)))) || (((logs[0].logs[0]==logs[1].logs[0])) || ((logs[0].logs[0]==0))))) && ([] ((! ((((state[0]==1)) && (<> ((state[0]==2)))) && ((state[2]==4)))) || (((logs[0].logs[0]==logs[2].logs[0])) || ((logs[0].logs[0]==0)))))) && ([] ((! ((((state[1]==1)) && (<> ((state[1]==2)))) && ((state[0]==4)))) || (((logs[1].logs[0]==logs[0].logs[0])) || ((logs[1].logs[0]==0)))))) && ([] ((! ((((state[1]==1)) && (<> ((state[1]==2)))) && ((state[2]==4)))) || (((logs[1].logs[0]==logs[2].logs[0])) || ((logs[1].logs[0]==0)))))) && ([] ((! ((((state[2]==1)) && (<> ((state[2]==2)))) && ((state[0]==4)))) || (((logs[2].logs[0]==logs[0].logs[0])) || ((logs[2].logs[0]==0)))))) && ([] ((! ((((state[2]==1)) && (<> ((state[2]==2)))) && ((state[1]==4)))) || (((logs[2].logs[0]==logs[1].logs[0])) || ((logs[2].logs[0]==0)))))
+warning: never claim + accept labels requires -a flag to fully verify
+error: max search depth too small
+Depth=     999 States=    1e+06 Transitions= 3.43e+06 Memory=  2359.598     t=     65.5 R=   2e+04
+Depth=     999 States=    2e+06 Transitions= 6.23e+06 Memory=  4587.381t=      143 R=   1e+04
+Depth=     999 States=    3e+06 Transitions= 8.98e+06 Memory=  6815.164        t=      220 R=   1e+04
+Depth=     999 States=    4e+06 Transitions= 1.17e+07 Memory=  9042.948        t=      297 R=   1e+04
+Depth=     999 States=    5e+06 Transitions= 1.43e+07 Memory= 11272.638        t=      380 R=   1e+04
+^CInterrupted
+
+(Spin Version 6.5.2 -- 6 December 2019)
+Warning: Search not completed
+        + Partial Order Reduction
+
+Full statespace search for:
+        never claim             + (recoveryLogConsistency)
+        assertion violations    + (if within scope of claim)
+        cycle checks            - (disabled by -DSAFETY)
+        invalid end states      - (disabled by never claim)
+
+State-vector 2412 byte, depth reached 999, errors: 0
+  5767905 states, stored
+ 10505182 states, matched
+ 16273087 transitions (= stored+matched)
+  4860939 atomic steps
+hash conflicts:    513674 (resolved)
+
+Stats on memory usage (in Megabytes):
+13421.715       equivalent memory usage for states (stored*(State-vector + overhead))
+12859.721       actual memory usage for states (compression: 95.81%)
+                state-vector as stored = 2310 byte + 28 byte overhead
+  128.000       memory used for hash table (-w24)
+    0.054       memory used for DFS stack (-m1000)
+    4.245       memory lost to fragmentation
+12983.530       total actual memory usage
+
+
+
+pan: elapsed time 459 seconds
+pan: rate 12570.076 states/second
+➜  BTP git:(main) ✗ 
+➜  BTP git:(main) ✗ 
+
+n=15
+
+➜  BTP git:(main) ✗ spin -a raft_sem8.pml
+gcc -DVECTORSZ=20000 -DSAFETY -o pan pan.c
+./pan -m1000
+ltl recoveryLogConsistency: ((((([] ((! ((((state[0]==1)) && (<> ((state[0]==2)))) && ((state[1]==4)))) || (((logs[0].logs[0]==logs[1].logs[0])) || ((logs[0].logs[0]==0))))) && ([] ((! ((((state[0]==1)) && (<> ((state[0]==2)))) && ((state[2]==4)))) || (((logs[0].logs[0]==logs[2].logs[0])) || ((logs[0].logs[0]==0)))))) && ([] ((! ((((state[1]==1)) && (<> ((state[1]==2)))) && ((state[0]==4)))) || (((logs[1].logs[0]==logs[0].logs[0])) || ((logs[1].logs[0]==0)))))) && ([] ((! ((((state[1]==1)) && (<> ((state[1]==2)))) && ((state[2]==4)))) || (((logs[1].logs[0]==logs[2].logs[0])) || ((logs[1].logs[0]==0)))))) && ([] ((! ((((state[2]==1)) && (<> ((state[2]==2)))) && ((state[0]==4)))) || (((logs[2].logs[0]==logs[0].logs[0])) || ((logs[2].logs[0]==0)))))) && ([] ((! ((((state[2]==1)) && (<> ((state[2]==2)))) && ((state[1]==4)))) || (((logs[2].logs[0]==logs[1].logs[0])) || ((logs[2].logs[0]==0)))))
+warning: never claim + accept labels requires -a flag to fully verify
+error: max search depth too small
+Depth=     999 States=    1e+06 Transitions= 1.06e+07 Memory=  3574.579      t=     92.8 R=   1e+04
+Depth=     999 States=    2e+06 Transitions= 2.12e+07 Memory=  7017.343      t=      193 R=   1e+04
+Depth=     999 States=    3e+06 Transitions= 3.17e+07 Memory= 10460.108      t=      301 R=   1e+04
+Depth=     999 States=    4e+06 Transitions= 4.21e+07 Memory= 13902.872      t=      409 R=   1e+04
+Depth=     999 States=    5e+06 Transitions= 5.21e+07 Memory= 17345.636      t=      503 R=   1e+04
+^CInterrupted
+
+(Spin Version 6.5.2 -- 6 December 2019)
+Warning: Search not completed
+        + Partial Order Reduction
+
+Full statespace search for:
+        never claim             + (recoveryLogConsistency)
+        assertion violations    + (if within scope of claim)
+        cycle checks            - (disabled by -DSAFETY)
+        invalid end states      - (disabled by never claim)
+
+State-vector 3724 byte, depth reached 999, errors: 0
+  5038095 states, stored
+ 47549281 states, matched
+ 52587376 transitions (= stored+matched)
+ 10548313 atomic steps
+hash conflicts:    239247 (resolved)
+
+Stats on memory usage (in Megabytes):
+18027.241       equivalent memory usage for states (stored*(State-vector + overhead))
+17361.095       actual memory usage for states (compression: 96.30%)
+                state-vector as stored = 3585 byte + 28 byte overhead
+  128.000       memory used for hash table (-w24)
+    0.054       memory used for DFS stack (-m1000)
+   11.906       memory lost to fragmentation
+17477.243       total actual memory usage
+
+
+
+pan: elapsed time 507 seconds
+pan: rate  9937.267 states/second
+➜  BTP git:(main) ✗ 
+
+n=20
+
+➜  BTP git:(main) ✗ spin -a raft_sem8.pml
+gcc -DVECTORSZ=20000 -DSAFETY -o pan pan.c
+./pan -m1000
+ltl recoveryLogConsistency: ((((([] ((! ((((state[0]==1)) && (<> ((state[0]==2)))) && ((state[1]==4)))) || (((logs[0].logs[0]==logs[1].logs[0])) || ((logs[0].logs[0]==0))))) && ([] ((! ((((state[0]==1)) && (<> ((state[0]==2)))) && ((state[2]==4)))) || (((logs[0].logs[0]==logs[2].logs[0])) || ((logs[0].logs[0]==0)))))) && ([] ((! ((((state[1]==1)) && (<> ((state[1]==2)))) && ((state[0]==4)))) || (((logs[1].logs[0]==logs[0].logs[0])) || ((logs[1].logs[0]==0)))))) && ([] ((! ((((state[1]==1)) && (<> ((state[1]==2)))) && ((state[2]==4)))) || (((logs[1].logs[0]==logs[2].logs[0])) || ((logs[1].logs[0]==0)))))) && ([] ((! ((((state[2]==1)) && (<> ((state[2]==2)))) && ((state[0]==4)))) || (((logs[2].logs[0]==logs[0].logs[0])) || ((logs[2].logs[0]==0)))))) && ([] ((! ((((state[2]==1)) && (<> ((state[2]==2)))) && ((state[1]==4)))) || (((logs[2].logs[0]==logs[1].logs[0])) || ((logs[2].logs[0]==0)))))
+warning: never claim + accept labels requires -a flag to fully verify
+error: max search depth too small
+Depth=     999 States=    1e+06 Transitions= 2.22e+06 Memory=  4793.375      t=     92.1 R=   1e+04
+Depth=     999 States=    2e+06 Transitions=  4.4e+06 Memory=  9456.842      t=      185 R=   1e+04
+Depth=     999 States=    3e+06 Transitions= 6.62e+06 Memory= 14120.310      t=      267 R=   1e+04
+Depth=     999 States=    4e+06 Transitions= 8.86e+06 Memory= 18783.777       t=      375 R=   1e+04
+Depth=     999 States=    5e+06 Transitions= 1.11e+07 Memory= 23447.244  t=      563 R=   9e+03
+^CInterrupted
+
+(Spin Version 6.5.2 -- 6 December 2019)
+Warning: Search not completed
+        + Partial Order Reduction
+
+Full statespace search for:
+        never claim             + (recoveryLogConsistency)
+        assertion violations    + (if within scope of claim)
+        cycle checks            - (disabled by -DSAFETY)
+        invalid end states      - (disabled by never claim)
+
+State-vector 4968 byte, depth reached 999, errors: 0
+  5021984 states, stored
+  6131310 states, matched
+ 11153294 transitions (= stored+matched)
+  2220905 atomic steps
+hash conflicts:    197269 (resolved)
+
+Stats on memory usage (in Megabytes):
+23927.528       equivalent memory usage for states (stored*(State-vector + overhead))
+23471.736       actual memory usage for states (compression: 98.10%)
+                state-vector as stored = 4873 byte + 28 byte overhead
+  128.000       memory used for hash table (-w24)
+    0.054       memory used for DFS stack (-m1000)
+   49.548       memory lost to fragmentation
+23550.241       total actual memory usage
+
+
+
+pan: elapsed time 572 seconds
+pan: rate 8781.9953 states/second
+➜  BTP git:(main) ✗ 
+
+DONE

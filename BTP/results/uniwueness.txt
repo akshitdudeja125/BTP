@@ -1,0 +1,246 @@
+FOR n=3
+
+➜  BTP git:(main) ✗ spin -a raft_sem8.pml && gcc -Wno-constant-conversion -DSAFETY -o pan pan.c && ./pan -m1000
+ltl uniqueness: [] ((leaders<=1))
+warning: never claim + accept labels requires -a flag to fully verify
+error: max search depth too small
+Depth=     999 States=    1e+06 Transitions= 4.03e+06 Memory=   811.203 t=     7.12 R=   1e+05
+Depth=     999 States=    2e+06 Transitions= 8.09e+06 Memory=  1494.113 t=     14.4 R=   1e+05
+Depth=     999 States=    3e+06 Transitions= 1.21e+07 Memory=  2177.023 t=     23.3 R=   1e+05
+Depth=     999 States=    4e+06 Transitions= 1.62e+07 Memory=  2859.934 t=     33.5 R=   1e+05
+Depth=     999 States=    5e+06 Transitions= 2.02e+07 Memory=  3542.844 t=     48.8 R=   1e+05
+Depth=     999 States=    6e+06 Transitions= 2.42e+07 Memory=  4225.754 t=     61.2 R=   1e+05
+Depth=     999 States=    7e+06 Transitions= 2.82e+07 Memory=  4908.664 t=     75.2 R=   9e+04
+Depth=     999 States=    8e+06 Transitions= 3.23e+07 Memory=  5591.574 t=     87.8 R=   9e+04
+Depth=     999 States=    9e+06 Transitions= 3.62e+07 Memory=  6274.484 t=      105 R=   9e+04
+Depth=     999 States=    1e+07 Transitions= 4.04e+07 Memory=  6957.395 t=      130 R=   8e+04
+^CInterrupted
+
+(Spin Version 6.5.2 -- 6 December 2019)
+Warning: Search not completed
+        + Partial Order Reduction
+
+Full statespace search for:
+        never claim             + (uniqueness)
+        assertion violations    + (if within scope of claim)
+        cycle checks            - (disabled by -DSAFETY)
+        invalid end states      - (disabled by never claim)
+
+State-vector 720 byte, depth reached 999, errors: 0
+ 10176079 states, stored
+ 30934049 states, matched
+ 41110128 transitions (= stored+matched)
+ 61106597 atomic steps
+hash conflicts:   1884581 (resolved)
+
+Stats on memory usage (in Megabytes):
+ 7259.090       equivalent memory usage for states (stored*(State-vector + overhead))
+ 6989.282       actual memory usage for states (compression: 96.28%)
+                state-vector as stored = 692 byte + 28 byte overhead
+  128.000       memory used for hash table (-w24)
+    0.054       memory used for DFS stack (-m1000)
+   39.726       memory lost to fragmentation
+ 7077.609       total actual memory usage
+
+
+
+pan: elapsed time 151 seconds
+pan: rate 67462.735 states/second
+
+
+
+
+n=5 
+➜  BTP git:(main) ✗ spin -a raft_sem8.pml
+gcc -DVECTORSZ=2048 -DSAFETY -o pan pan.c
+./pan -m1000
+ltl uniqueness: [] ((leaders<=1))
+warning: never claim + accept labels requires -a flag to fully verify
+error: max search depth too small
+Depth=     999 States=    1e+06 Transitions= 5.98e+06 Memory=  1244.406 t=     12.6 R=   8e+04
+Depth=     999 States=    2e+06 Transitions= 1.18e+07 Memory=  2360.422 t=     25.6 R=   8e+04
+Depth=     999 States=    3e+06 Transitions= 1.79e+07 Memory=  3476.438 t=     38.9 R=   8e+04
+Depth=     999 States=    4e+06 Transitions= 2.48e+07 Memory=  4592.648 t=     52.4 R=   8e+04
+Depth=     999 States=    5e+06 Transitions= 3.17e+07 Memory=  5708.664 t=     67.7 R=   7e+04
+Depth=     999 States=    6e+06 Transitions= 3.68e+07 Memory=  6824.680 t=     81.6 R=   7e+04
+Depth=     999 States=    7e+06 Transitions= 4.19e+07 Memory=  7940.891 t=      105 R=   7e+04
+^CInterrupted
+
+(Spin Version 6.5.2 -- 6 December 2019)
+Warning: Search not completed
+        + Partial Order Reduction
+
+Full statespace search for:
+        never claim             + (uniqueness)
+        assertion violations    + (if within scope of claim)
+        cycle checks            - (disabled by -DSAFETY)
+        invalid end states      - (disabled by never claim)
+
+State-vector 1184 byte, depth reached 999, errors: 0
+  7586574 states, stored
+ 37056126 states, matched
+ 44642700 transitions (= stored+matched)
+ 33466149 atomic steps
+hash conflicts:    990105 (resolved)
+
+Stats on memory usage (in Megabytes):
+ 8768.966       equivalent memory usage for states (stored*(State-vector + overhead))
+ 8483.962       actual memory usage for states (compression: 96.75%)
+                state-vector as stored = 1145 byte + 28 byte overhead
+  128.000       memory used for hash table (-w24)
+    0.054       memory used for DFS stack (-m1000)
+   16.633       memory lost to fragmentation
+ 8595.383       total actual memory usage
+
+
+
+pan: elapsed time 124 seconds
+pan: rate 60946.128 states/second
+
+
+n= 10
+
+➜  BTP git:(main) ✗ spin -a raft_sem8.pml
+gcc -DVECTORSZ=6800 -DSAFETY -o pan pan.c     ./pan -m1000
+ltl uniqueness: [] ((leaders<=1))
+warning: never claim + accept labels requires -a flag to fully verify
+error: max search depth too small
+Depth=     999 States=    1e+06 Transitions= 3.43e+06 Memory=  2357.538  t=     19.8 R=   5e+04
+Depth=     999 States=    2e+06 Transitions= 6.23e+06 Memory=  4585.779 t=     41.9 R=   5e+04
+Depth=     999 States=    3e+06 Transitions= 8.98e+06 Memory=  6814.668 t=     63.8 R=   5e+04
+Depth=     999 States=    4e+06 Transitions= 1.17e+07 Memory=  9042.909 t=     86.1 R=   5e+04
+Depth=     999 States=    5e+06 Transitions= 1.43e+07 Memory= 11271.799 t=      110 R=   5e+04
+^CInterrupted
+
+(Spin Version 6.5.2 -- 6 December 2019)
+Warning: Search not completed
+        + Partial Order Reduction
+
+Full statespace search for:
+        never claim             + (uniqueness)
+        assertion violations    + (if within scope of claim)
+        cycle checks            - (disabled by -DSAFETY)
+        invalid end states      - (disabled by never claim)
+
+State-vector 2412 byte, depth reached 999, errors: 0
+  5241219 states, stored
+  9668972 states, matched
+ 14910191 transitions (= stored+matched)
+  4697367 atomic steps
+hash conflicts:    400711 (resolved)
+
+Stats on memory usage (in Megabytes):
+12196.135       equivalent memory usage for states (stored*(State-vector + overhead))
+11685.748       actual memory usage for states (compression: 95.82%)
+                state-vector as stored = 2310 byte + 28 byte overhead
+  128.000       memory used for hash table (-w24)
+    0.054       memory used for DFS stack (-m1000)
+    4.397       memory lost to fragmentation
+11809.404       total actual memory usage
+
+
+
+pan: elapsed time 121 seconds
+pan: rate 43340.933 states/second
+➜  BTP git:(main) ✗ 
+
+
+
+
+n= 15
+
+➜  BTP git:(main) ✗ spin -a raft_sem8.pml
+gcc -DVECTORSZ=10000 -DSAFETY -o pan pan.c
+./pan -m1000
+ltl uniqueness: [] ((leaders<=1))
+warning: never claim + accept labels requires -a flag to fully verify
+error: max search depth too small
+Depth=     999 States=    1e+06 Transitions= 1.06e+07 Memory=  3572.672 t=     24.4 R=   4e+04
+Depth=     999 States=    2e+06 Transitions= 2.12e+07 Memory=  7015.436 t=     53.1 R=   4e+04
+Depth=     999 States=    3e+06 Transitions= 3.17e+07 Memory= 10458.200 t=     85.6 R=   4e+04
+Depth=     999 States=    4e+06 Transitions= 4.21e+07 Memory= 13900.964 t=      123 R=   3e+04
+Depth=     999 States=    5e+06 Transitions= 5.21e+07 Memory= 17343.729 t=      172 R=   3e+04
+^CInterrupted
+
+(Spin Version 6.5.2 -- 6 December 2019)
+Warning: Search not completed
+        + Partial Order Reduction
+
+Full statespace search for:
+        never claim             + (uniqueness)
+        assertion violations    + (if within scope of claim)
+        cycle checks            - (disabled by -DSAFETY)
+        invalid end states      - (disabled by never claim)
+
+State-vector 3724 byte, depth reached 999, errors: 0
+  5286542 states, stored
+ 50203420 states, matched
+ 55489962 transitions (= stored+matched)
+ 10999408 atomic steps
+hash conflicts:    269449 (resolved)
+
+Stats on memory usage (in Megabytes):
+18916.231       equivalent memory usage for states (stored*(State-vector + overhead))
+18214.214       actual memory usage for states (compression: 96.29%)
+                state-vector as stored = 3585 byte + 28 byte overhead
+  128.000       memory used for hash table (-w24)
+    0.054       memory used for DFS stack (-m1000)
+   11.486       memory lost to fragmentation
+18330.782       total actual memory usage
+
+
+
+pan: elapsed time 188 seconds
+pan: rate 28187.374 states/second
+^C%                                                                                   
+➜  BTP git:(main) ✗ 
+
+
+n=20
+➜  BTP git:(main) ✗ spin -a raft_sem8.pml
+gcc -DVECTORSZ=20000 -DSAFETY -o pan pan.c
+./pan -m1000
+ltl uniqueness: [] ((leaders<=1))
+warning: never claim + accept labels requires -a flag to fully verify
+error: max search depth too small
+Depth=     999 States=    1e+06 Transitions= 2.22e+06 Memory=  4793.375 t=     30.8 R=   3e+04
+Depth=     999 States=    2e+06 Transitions=  4.4e+06 Memory=  9456.842    t=     61.8 R=   3e+04
+Depth=     999 States=    3e+06 Transitions= 6.62e+06 Memory= 14120.310    t=      102 R=   3e+04
+Depth=     999 States=    4e+06 Transitions= 8.86e+06 Memory= 18783.777    t=      149 R=   3e+04
+Depth=     999 States=    5e+06 Transitions= 1.11e+07 Memory= 23447.244 t=      605 R=   8e+03
+^CInterrupted
+
+(Spin Version 6.5.2 -- 6 December 2019)
+Warning: Search not completed
+        + Partial Order Reduction
+
+Full statespace search for:
+        never claim             + (uniqueness)
+        assertion violations    + (if within scope of claim)
+        cycle checks            - (disabled by -DSAFETY)
+        invalid end states      - (disabled by never claim)
+
+State-vector 4968 byte, depth reached 999, errors: 0
+  5086240 states, stored
+  6209044 states, matched
+ 11295284 transitions (= stored+matched)
+  2245417 atomic steps
+hash conflicts:    203382 (resolved)
+
+Stats on memory usage (in Megabytes):
+24233.680       equivalent memory usage for states (stored*(State-vector + overhead))
+23771.832       actual memory usage for states (compression: 98.09%)
+                state-vector as stored = 4873 byte + 28 byte overhead
+  128.000       memory used for hash table (-w24)
+    0.054       memory used for DFS stack (-m1000)
+   50.191       memory lost to fragmentation
+23849.695       total actual memory usage
+
+
+
+pan: elapsed time 611 seconds
+pan: rate 8321.4554 states/second
+
+
+
+DONE

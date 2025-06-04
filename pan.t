@@ -24,692 +24,189 @@ settable(void)
 
 	trans = (Trans ***) emalloc(7*sizeof(Trans **));
 
-	/* proctype 5: uniqueness */
+	/* proctype 5: server_usage */
 
-	trans[5] = (Trans **) emalloc(11*sizeof(Trans *));
+	trans[5] = (Trans **) emalloc(7*sizeof(Trans *));
 
-	trans[5][7]	= settr(444,0,6,1,0,".(goto)", 0, 2, 0);
-	T = trans[5][6] = settr(443,0,0,0,0,"DO", 0, 2, 0);
-	T = T->nxt	= settr(443,0,3,0,0,"DO", 0, 2, 0);
-	    T->nxt	= settr(443,0,4,0,0,"DO", 0, 2, 0);
-	T = trans[ 5][3] = settr(440,2,0,0,0,"ATOMIC", 1, 2, 0);
-	T->nxt	= settr(440,2,1,0,0,"ATOMIC", 1, 2, 0);
-	trans[5][1]	= settr(438,0,6,3,3,"(!((leaders<=1)))", 1, 2, 0); /* m: 2 -> 6,0 */
-	reached5[2] = 1;
-	trans[5][2]	= settr(0,0,0,0,0,"assert(!(!((leaders<=1))))",0,0,0);
-	trans[5][4]	= settr(441,0,6,1,0,"(1)", 0, 2, 0);
-	trans[5][5]	= settr(442,0,6,1,0,"goto T0_init", 0, 2, 0);
-	trans[5][8]	= settr(445,0,9,1,0,"break", 0, 2, 0);
-	trans[5][9]	= settr(446,0,10,1,0,"(1)", 0, 2, 0);
-	trans[5][10]	= settr(447,0,0,4,4,"-end-", 0, 3500, 0);
+	trans[5][4]	= settr(117,0,3,1,0,".(goto)", 0, 2, 0);
+	T = trans[5][3] = settr(116,0,0,0,0,"DO", 0, 2, 0);
+	    T->nxt	= settr(116,0,1,0,0,"DO", 0, 2, 0);
+	trans[5][1]	= settr(114,0,3,3,0,"(!(((client_served_by[1]>0)||(client_served_by[2]>0))))", 1, 2, 0);
+	trans[5][2]	= settr(115,0,3,1,0,"goto T0_init", 0, 2, 0);
+	trans[5][5]	= settr(118,0,6,1,0,"break", 0, 2, 0);
+	trans[5][6]	= settr(119,0,0,4,4,"-end-", 0, 3500, 0);
 
-	/* proctype 4: electionFairness */
+	/* proctype 4: message_processing */
 
-	trans[4] = (Trans **) emalloc(28*sizeof(Trans *));
+	trans[4] = (Trans **) emalloc(7*sizeof(Trans *));
 
-	trans[4][10]	= settr(420,0,9,1,0,".(goto)", 0, 2, 0);
-	T = trans[4][9] = settr(419,0,0,0,0,"DO", 0, 2, 0);
-	T = T->nxt	= settr(419,0,1,0,0,"DO", 0, 2, 0);
-	T = T->nxt	= settr(419,0,3,0,0,"DO", 0, 2, 0);
-	T = T->nxt	= settr(419,0,5,0,0,"DO", 0, 2, 0);
-	    T->nxt	= settr(419,0,7,0,0,"DO", 0, 2, 0);
-	trans[4][1]	= settr(411,0,14,5,0,"((!(!((state[2]==3)))&&!((state[2]!=3))))", 1, 2, 0);
-	trans[4][2]	= settr(412,0,14,1,0,"goto accept_S4", 0, 2, 0);
-	trans[4][3]	= settr(413,0,19,6,0,"((!(!((state[1]==3)))&&!((state[1]!=3))))", 1, 2, 0);
-	trans[4][4]	= settr(414,0,19,1,0,"goto accept_S25", 0, 2, 0);
-	trans[4][5]	= settr(415,0,24,7,0,"((!(!((state[0]==3)))&&!((state[0]!=3))))", 1, 2, 0);
-	trans[4][6]	= settr(416,0,24,1,0,"goto accept_S46", 0, 2, 0);
-	trans[4][7]	= settr(417,0,9,1,0,"(1)", 0, 2, 0);
-	trans[4][8]	= settr(418,0,9,1,0,"goto T0_init", 0, 2, 0);
-	trans[4][11]	= settr(421,0,14,1,0,"break", 0, 2, 0);
-	trans[4][15]	= settr(425,0,14,1,0,".(goto)", 0, 2, 0);
-	T = trans[4][14] = settr(424,0,0,0,0,"DO", 0, 2, 0);
-	    T->nxt	= settr(424,0,12,0,0,"DO", 0, 2, 0);
-	trans[4][12]	= settr(422,0,14,8,0,"((!(!((state[2]==3)))&&!((state[2]!=3))))", 1, 2, 0);
-	trans[4][13]	= settr(423,0,14,1,0,"goto accept_S4", 0, 2, 0);
-	trans[4][16]	= settr(426,0,19,1,0,"break", 0, 2, 0);
-	trans[4][20]	= settr(430,0,19,1,0,".(goto)", 0, 2, 0);
-	T = trans[4][19] = settr(429,0,0,0,0,"DO", 0, 2, 0);
-	    T->nxt	= settr(429,0,17,0,0,"DO", 0, 2, 0);
-	trans[4][17]	= settr(427,0,19,9,0,"((!(!((state[1]==3)))&&!((state[1]!=3))))", 1, 2, 0);
-	trans[4][18]	= settr(428,0,19,1,0,"goto accept_S25", 0, 2, 0);
-	trans[4][21]	= settr(431,0,24,1,0,"break", 0, 2, 0);
-	trans[4][25]	= settr(435,0,24,1,0,".(goto)", 0, 2, 0);
-	T = trans[4][24] = settr(434,0,0,0,0,"DO", 0, 2, 0);
-	    T->nxt	= settr(434,0,22,0,0,"DO", 0, 2, 0);
-	trans[4][22]	= settr(432,0,24,10,0,"((!(!((state[0]==3)))&&!((state[0]!=3))))", 1, 2, 0);
-	trans[4][23]	= settr(433,0,24,1,0,"goto accept_S46", 0, 2, 0);
-	trans[4][26]	= settr(436,0,27,1,0,"break", 0, 2, 0);
-	trans[4][27]	= settr(437,0,0,11,11,"-end-", 0, 3500, 0);
+	trans[4][4]	= settr(111,0,3,1,0,".(goto)", 0, 2, 0);
+	T = trans[4][3] = settr(110,0,0,0,0,"DO", 0, 2, 0);
+	    T->nxt	= settr(110,0,1,0,0,"DO", 0, 2, 0);
+	trans[4][1]	= settr(108,0,3,5,0,"(!((messages_processed>0)))", 1, 2, 0);
+	trans[4][2]	= settr(109,0,3,1,0,"goto T0_init", 0, 2, 0);
+	trans[4][5]	= settr(112,0,6,1,0,"break", 0, 2, 0);
+	trans[4][6]	= settr(113,0,0,6,6,"-end-", 0, 3500, 0);
 
-	/* proctype 3: fairness */
+	/* proctype 3: no_server_overload */
 
-	trans[3] = (Trans **) emalloc(14*sizeof(Trans *));
+	trans[3] = (Trans **) emalloc(11*sizeof(Trans *));
 
-	trans[3][6]	= settr(403,0,5,1,0,".(goto)", 0, 2, 0);
-	T = trans[3][5] = settr(402,0,0,0,0,"DO", 0, 2, 0);
-	T = T->nxt	= settr(402,0,1,0,0,"DO", 0, 2, 0);
-	    T->nxt	= settr(402,0,3,0,0,"DO", 0, 2, 0);
-	trans[3][1]	= settr(398,0,10,12,0,"(!(((((state[0]!=1)&&(state[1]!=1))||((state[0]!=1)&&(state[2]!=1)))||((state[1]!=1)&&(state[2]!=1)))))", 1, 2, 0);
-	trans[3][2]	= settr(399,0,10,1,0,"goto accept_S4", 0, 2, 0);
-	trans[3][3]	= settr(400,0,5,1,0,"(1)", 0, 2, 0);
-	trans[3][4]	= settr(401,0,5,1,0,"goto T0_init", 0, 2, 0);
-	trans[3][7]	= settr(404,0,10,1,0,"break", 0, 2, 0);
-	trans[3][11]	= settr(408,0,10,1,0,".(goto)", 0, 2, 0);
-	T = trans[3][10] = settr(407,0,0,0,0,"DO", 0, 2, 0);
-	    T->nxt	= settr(407,0,8,0,0,"DO", 0, 2, 0);
-	trans[3][8]	= settr(405,0,10,13,0,"(!(((((state[0]!=1)&&(state[1]!=1))||((state[0]!=1)&&(state[2]!=1)))||((state[1]!=1)&&(state[2]!=1)))))", 1, 2, 0);
-	trans[3][9]	= settr(406,0,10,1,0,"goto accept_S4", 0, 2, 0);
-	trans[3][12]	= settr(409,0,13,1,0,"break", 0, 2, 0);
-	trans[3][13]	= settr(410,0,0,14,14,"-end-", 0, 3500, 0);
+	trans[3][7]	= settr(104,0,6,1,0,".(goto)", 0, 2, 0);
+	T = trans[3][6] = settr(103,0,0,0,0,"DO", 0, 2, 0);
+	T = T->nxt	= settr(103,0,3,0,0,"DO", 0, 2, 0);
+	    T->nxt	= settr(103,0,4,0,0,"DO", 0, 2, 0);
+	T = trans[ 3][3] = settr(100,2,0,0,0,"ATOMIC", 1, 2, 0);
+	T->nxt	= settr(100,2,1,0,0,"ATOMIC", 1, 2, 0);
+	trans[3][1]	= settr(98,0,6,7,7,"(!(!((server_busy[1]&&server_busy[2]))))", 1, 2, 0); /* m: 2 -> 6,0 */
+	reached3[2] = 1;
+	trans[3][2]	= settr(0,0,0,0,0,"assert(!(!(!((server_busy[1]&&server_busy[2])))))",0,0,0);
+	trans[3][4]	= settr(101,0,6,1,0,"(1)", 0, 2, 0);
+	trans[3][5]	= settr(102,0,6,1,0,"goto T0_init", 0, 2, 0);
+	trans[3][8]	= settr(105,0,9,1,0,"break", 0, 2, 0);
+	trans[3][9]	= settr(106,0,10,1,0,"(1)", 0, 2, 0);
+	trans[3][10]	= settr(107,0,0,8,8,"-end-", 0, 3500, 0);
 
-	/* proctype 2: liveness */
+	/* proctype 2: :init: */
 
-	trans[2] = (Trans **) emalloc(7*sizeof(Trans *));
+	trans[2] = (Trans **) emalloc(9*sizeof(Trans *));
 
-	trans[2][4]	= settr(395,0,3,1,0,".(goto)", 0, 2, 0);
-	T = trans[2][3] = settr(394,0,0,0,0,"DO", 0, 2, 0);
-	    T->nxt	= settr(394,0,1,0,0,"DO", 0, 2, 0);
-	trans[2][1]	= settr(392,0,3,15,0,"(!((isLeader==1)))", 1, 2, 0);
-	trans[2][2]	= settr(393,0,3,1,0,"goto T0_init", 0, 2, 0);
-	trans[2][5]	= settr(396,0,6,1,0,"break", 0, 2, 0);
-	trans[2][6]	= settr(397,0,0,16,16,"-end-", 0, 3500, 0);
+	T = trans[ 2][6] = settr(95,2,0,0,0,"ATOMIC", 0, 2, 0);
+	T->nxt	= settr(95,2,1,0,0,"ATOMIC", 0, 2, 0);
+	trans[2][1]	= settr(90,2,2,9,9,"(run Server(1))", 0, 2, 0);
+	trans[2][2]	= settr(91,2,3,10,10,"(run Server(2))", 0, 2, 0);
+	trans[2][3]	= settr(92,2,4,11,11,"(run Client(1))", 0, 2, 0);
+	trans[2][4]	= settr(93,2,5,12,12,"(run Client(2))", 0, 2, 0);
+	trans[2][5]	= settr(94,0,7,13,0,"printf('All processes started. System running...\\n')", 0, 2, 0);
+	trans[2][7]	= settr(96,0,8,14,0,"printf('System reached init end state.\\n')", 0, 2, 0);
+	trans[2][8]	= settr(97,0,0,15,15,"-end-", 0, 3500, 0);
 
-	/* proctype 1: :init: */
+	/* proctype 1: Client */
 
-	trans[1] = (Trans **) emalloc(17*sizeof(Trans *));
+	trans[1] = (Trans **) emalloc(35*sizeof(Trans *));
 
-	trans[1][1]	= settr(376,0,14,17,17,"printf('INIT: Starting Raft simulation with %d servers\\n',3)", 0, 2, 0); /* m: 2 -> 0,14 */
-	reached1[2] = 1;
-	trans[1][2]	= settr(0,0,0,0,0,"i = 0",0,0,0);
-	T = trans[ 1][14] = settr(389,2,0,0,0,"ATOMIC", 1, 2, 0);
-	T->nxt	= settr(389,2,3,0,0,"ATOMIC", 1, 2, 0);
-	trans[1][3]	= settr(378,2,11,18,18,"i = 0", 1, 2, 0);
-	trans[1][12]	= settr(387,2,11,1,0,".(goto)", 1, 2, 0);
-	T = trans[1][11] = settr(386,2,0,0,0,"DO", 1, 2, 0);
-	T = T->nxt	= settr(386,2,4,0,0,"DO", 1, 2, 0);
-	    T->nxt	= settr(386,2,9,0,0,"DO", 1, 2, 0);
-	trans[1][4]	= settr(379,2,7,19,19,"((i<=(3-1)))", 1, 2, 0); /* m: 5 -> 7,0 */
-	reached1[5] = 1;
-	trans[1][5]	= settr(0,0,0,0,0,"leader[i] = 0",0,0,0);
-	trans[1][6]	= settr(0,0,0,0,0,"connect[i] = 0",0,0,0);
-	trans[1][7]	= settr(382,2,8,20,20,"(run server(i))", 1, 2, 0);
-	trans[1][8]	= settr(383,2,11,21,21,"i = (i+1)", 1, 2, 0);
-	trans[1][9]	= settr(384,2,10,2,0,"else", 1, 2, 0);
-	trans[1][10]	= settr(385,2,13,1,0,"goto :b7", 1, 2, 0);
-	trans[1][13]	= settr(388,0,15,1,0,"break", 1, 2, 0);
-	trans[1][15]	= settr(390,0,16,22,0,"printf('INIT: All servers started\\n')", 0, 2, 0);
-	trans[1][16]	= settr(391,0,0,23,23,"-end-", 0, 3500, 0);
+	trans[1][31]	= settr(86,0,30,1,0,".(goto)", 0, 2, 0);
+	T = trans[1][30] = settr(85,0,0,0,0,"DO", 0, 2, 0);
+	T = T->nxt	= settr(85,0,1,0,0,"DO", 0, 2, 0);
+	    T->nxt	= settr(85,0,28,0,0,"DO", 0, 2, 0);
+	trans[1][1]	= settr(56,0,6,16,0,"((client_requests[id]<10))", 1, 2, 0);
+	T = trans[1][6] = settr(61,0,0,0,0,"IF", 0, 2, 0);
+	T = T->nxt	= settr(61,0,2,0,0,"IF", 0, 2, 0);
+	    T->nxt	= settr(61,0,4,0,0,"IF", 0, 2, 0);
+	trans[1][2]	= settr(57,0,3,17,17,"client_to_server1!1,id,_pid", 1, 3, 0);
+	trans[1][3]	= settr(58,0,25,18,0,"printf('Client %d (pid %d) sent request to Server 1\\n',id,_pid)", 0, 2, 0);
+	trans[1][7]	= settr(62,0,25,1,0,".(goto)", 0, 2, 0);
+	trans[1][4]	= settr(59,0,5,19,19,"client_to_server2!1,id,_pid", 1, 4, 0);
+	trans[1][5]	= settr(60,0,25,20,0,"printf('Client %d (pid %d) sent request to Server 2\\n',id,_pid)", 0, 2, 0);
+	trans[1][26]	= settr(81,0,25,1,0,".(goto)", 0, 2, 0);
+	T = trans[1][25] = settr(80,0,0,0,0,"DO", 0, 2, 0);
+	T = T->nxt	= settr(80,0,8,0,0,"DO", 0, 2, 0);
+	    T->nxt	= settr(80,0,23,0,0,"DO", 0, 2, 0);
+	trans[1][8]	= settr(63,0,9,21,0,"(server_to_client?[2,_,_pid])", 1, 2, 0);
+	trans[1][9]	= settr(64,0,21,22,22,"server_to_client?msg_type,server_id,dummy", 1, 505, 0);
+	T = trans[ 1][21] = settr(76,2,0,0,0,"ATOMIC", 1, 2, 0);
+	T->nxt	= settr(76,2,10,0,0,"ATOMIC", 1, 2, 0);
+	trans[1][10]	= settr(65,2,19,23,23,"requests_handled = (requests_handled+1)", 1, 2, 0); /* m: 11 -> 0,19 */
+	reached1[11] = 1;
+	trans[1][11]	= settr(0,0,0,0,0,"client_requests[id] = (client_requests[id]+1)",0,0,0);
+	trans[1][12]	= settr(0,0,0,0,0,"client_served_by[id] = server_id",0,0,0);
+	trans[1][13]	= settr(0,0,0,0,0,"printf('Client %d (pid %d) received response from Server %d (request #%d)\\n',id,_pid,server_id,requests_handled)",0,0,0);
+	T = trans[1][19] = settr(74,2,0,0,0,"IF", 1, 2, 0);
+	T = T->nxt	= settr(74,2,14,0,0,"IF", 1, 2, 0);
+	    T->nxt	= settr(74,2,17,0,0,"IF", 1, 2, 0);
+	trans[1][14]	= settr(69,4,33,24,24,"((client_requests[id]==10))", 1, 2, 0); /* m: 15 -> 33,0 */
+	reached1[15] = 1;
+	trans[1][15]	= settr(0,0,0,0,0,"printf('Client %d (pid %d) sent 10 requests and is terminating\\n',id,_pid)",0,0,0);
+	trans[1][16]	= settr(71,0,33,1,0,"goto end", 1, 2, 0);
+	trans[1][20]	= settr(75,0,30,1,0,".(goto)", 1, 2, 0);
+	trans[1][17]	= settr(72,2,18,2,0,"else", 1, 2, 0);
+	trans[1][18]	= settr(73,0,30,25,25,"(1)", 1, 2, 0); /* m: 20 -> 30,0 */
+	reached1[20] = 1;
+	trans[1][22]	= settr(77,0,30,1,0,"goto :b2", 0, 2, 0);
+	trans[1][23]	= settr(78,0,24,2,0,"else", 0, 2, 0);
+	trans[1][24]	= settr(79,0,25,1,0,"(1)", 0, 2, 0);
+	trans[1][27]	= settr(82,0,30,1,0,"break", 0, 2, 0);
+	trans[1][28]	= settr(83,0,33,2,0,"else", 0, 2, 0);
+	trans[1][29]	= settr(84,0,33,1,0,"goto end", 0, 2, 0);
+	trans[1][32]	= settr(87,0,33,1,0,"break", 0, 2, 0);
+	trans[1][33]	= settr(88,0,34,1,0,"(1)", 0, 2, 0);
+	trans[1][34]	= settr(89,0,0,26,26,"-end-", 0, 3500, 0);
 
-	/* proctype 0: server */
+	/* proctype 0: Server */
 
-	trans[0] = (Trans **) emalloc(377*sizeof(Trans *));
+	trans[0] = (Trans **) emalloc(57*sizeof(Trans *));
 
-	trans[0][1]	= settr(0,0,2,24,0,"printf('SERVER %d: Starting server process\\n',serverId)", 0, 2, 0);
-	trans[0][2]	= settr(1,0,3,25,25,"state[serverId] = 2", 1, 2, 0);
-	trans[0][3]	= settr(2,0,4,26,26,"votedFor = 10", 0, 2, 0);
-	trans[0][4]	= settr(3,0,5,27,27,"time_out[serverId] = 1", 1, 2, 0);
-	trans[0][5]	= settr(4,0,6,28,28,"leader[serverId] = 0", 1, 2, 0);
-	trans[0][6]	= settr(5,0,7,29,29,"connect[serverId] = (3-1)", 1, 2, 0);
-	trans[0][7]	= settr(6,0,8,30,30,"consecutiveCrashes[serverId] = 0", 1, 2, 0);
-	trans[0][8]	= settr(7,0,9,31,0,"printf('SERVER %d: Initialized as follower,term = %d,votedFor = %d,time_out = %d\\n',serverId,currentTerm[serverId],votedFor,time_out[serverId])", 1, 2, 0);
-	trans[0][9]	= settr(8,0,372,32,32,"i = 0", 0, 2, 0); /* m: 10 -> 0,372 */
-	reached0[10] = 1;
-	trans[0][10]	= settr(0,0,0,0,0,"votesGranted[0] = 0",0,0,0);
-	trans[0][11]	= settr(0,0,0,0,0,"lastLogTerm = 0",0,0,0);
-	trans[0][12]	= settr(0,0,0,0,0,"lastLogIndex = 0",0,0,0);
-	trans[0][13]	= settr(0,0,0,0,0,"logOk = 0",0,0,0);
-	trans[0][14]	= settr(0,0,0,0,0,"",0,0,0);
-	trans[0][15]	= settr(0,0,0,0,0,"",0,0,0);
-	trans[0][16]	= settr(0,0,0,0,0,"voteCount = 0",0,0,0);
-	trans[0][373]	= settr(372,0,372,1,0,".(goto)", 0, 2, 0);
-	T = trans[0][372] = settr(371,0,0,0,0,"DO", 0, 2, 0);
-	T = T->nxt	= settr(371,0,17,0,0,"DO", 0, 2, 0);
-	T = T->nxt	= settr(371,0,41,0,0,"DO", 0, 2, 0);
-	T = T->nxt	= settr(371,0,49,0,0,"DO", 0, 2, 0);
-	T = T->nxt	= settr(371,0,53,0,0,"DO", 0, 2, 0);
-	T = T->nxt	= settr(371,0,100,0,0,"DO", 0, 2, 0);
-	T = T->nxt	= settr(371,0,149,0,0,"DO", 0, 2, 0);
-	T = T->nxt	= settr(371,0,153,0,0,"DO", 0, 2, 0);
-	T = T->nxt	= settr(371,0,327,0,0,"DO", 0, 2, 0);
-	    T->nxt	= settr(371,0,361,0,0,"DO", 0, 2, 0);
-	trans[0][17]	= settr(16,0,40,33,0,"(((state[serverId]!=1)&&(consecutiveCrashes[serverId]<1)))", 1, 2, 0);
-	T = trans[ 0][40] = settr(39,2,0,0,0,"ATOMIC", 1, 2, 0);
-	T->nxt	= settr(39,2,18,0,0,"ATOMIC", 1, 2, 0);
-	trans[0][18]	= settr(17,2,26,34,34,"consecutiveCrashes[serverId] = (consecutiveCrashes[serverId]+1)", 1, 2, 0); /* m: 19 -> 0,26 */
-	reached0[19] = 1;
-	trans[0][19]	= settr(0,0,0,0,0,"printf('SERVER %d: Crashing from state %e (crash count: %d)\\n',serverId,state[serverId],consecutiveCrashes[serverId])",0,0,0);
-	T = trans[0][26] = settr(25,2,0,0,0,"IF", 1, 2, 0);
-	T = T->nxt	= settr(25,2,20,0,0,"IF", 1, 2, 0);
-	    T->nxt	= settr(25,2,24,0,0,"IF", 1, 2, 0);
-	trans[0][20]	= settr(19,2,36,35,35,"((state[serverId]==4))", 1, 2, 0); /* m: 21 -> 36,0 */
-	reached0[21] = 1;
-	trans[0][21]	= settr(0,0,0,0,0,"leaders = (leaders-1)",0,0,0);
-	trans[0][22]	= settr(0,0,0,0,0,"isLeader = (leaders>0)",0,0,0);
-	trans[0][23]	= settr(0,0,0,0,0,"leader[serverId] = 0",0,0,0);
-	trans[0][27]	= settr(26,2,28,1,0,".(goto)", 1, 2, 0); /* m: 28 -> 0,36 */
+	trans[0][53]	= settr(52,0,52,1,0,".(goto)", 0, 2, 0);
+	T = trans[0][52] = settr(51,0,0,0,0,"DO", 0, 2, 0);
+	T = T->nxt	= settr(51,0,1,0,0,"DO", 0, 2, 0);
+	T = T->nxt	= settr(51,0,25,0,0,"DO", 0, 2, 0);
+	    T->nxt	= settr(51,0,50,0,0,"DO", 0, 2, 0);
+	trans[0][1]	= settr(0,0,2,27,0,"((((server_requests[id]<10)&&(id==1))&&client_to_server1?[1,_,_]))", 1, 2, 0);
+	trans[0][2]	= settr(1,0,9,1,0,"(1)", 0, 2, 0);
+	T = trans[ 0][9] = settr(8,2,0,0,0,"ATOMIC", 1, 2, 0);
+	T->nxt	= settr(8,2,7,0,0,"ATOMIC", 1, 2, 0);
+	T = trans[0][7] = settr(6,2,0,0,0,"IF", 1, 2, 0);
+	T = T->nxt	= settr(6,2,3,0,0,"IF", 1, 2, 0);
+	    T->nxt	= settr(6,2,5,0,0,"IF", 1, 2, 0);
+	trans[0][3]	= settr(2,4,10,28,28,"((server_mutex==1))", 1, 2, 0); /* m: 4 -> 10,0 */
+	reached0[4] = 1;
+	trans[0][4]	= settr(0,0,0,0,0,"server_mutex = 0",0,0,0);
+	trans[0][8]	= settr(7,0,10,1,0,".(goto)", 1, 2, 0);
+	trans[0][5]	= settr(4,2,6,2,0,"else", 1, 2, 0);
+	trans[0][6]	= settr(5,0,49,1,0,"goto wait_for_mutex", 1, 2, 0);
+	trans[0][10]	= settr(9,0,11,29,29,"client_to_server1?msg_type,client_id,client_pid", 1, 503, 0);
+	trans[0][11]	= settr(10,0,12,30,0,"printf('Server %d (pid %d) processing request from Client %d (pid %d)\\n',id,_pid,client_id,client_pid)", 0, 2, 0);
+	trans[0][12]	= settr(11,0,13,31,31,"server_busy[id] = 1", 1, 2, 0);
+	trans[0][13]	= settr(12,0,14,32,32,"server_busy[id] = 0", 1, 2, 0);
+	trans[0][14]	= settr(13,0,15,33,33,"server_to_client!2,id,client_pid", 1, 5, 0);
+	trans[0][15]	= settr(14,0,16,34,34,"server_requests[id] = (server_requests[id]+1)", 1, 2, 0);
+	trans[0][16]	= settr(15,0,23,35,35,"messages_processed = (messages_processed+1)", 1, 2, 0);
+	T = trans[0][23] = settr(22,0,0,0,0,"IF", 0, 2, 0);
+	T = T->nxt	= settr(22,0,17,0,0,"IF", 0, 2, 0);
+	    T->nxt	= settr(22,0,21,0,0,"IF", 0, 2, 0);
+	trans[0][17]	= settr(16,0,18,36,0,"((server_requests[id]==10))", 1, 2, 0);
+	trans[0][18]	= settr(17,0,19,37,0,"printf('Server %d (pid %d) processed 10 messages and is terminating\\n',id,_pid)", 0, 2, 0);
+	trans[0][19]	= settr(18,0,55,38,38,"server_mutex = 1", 1, 2, 0);
+	trans[0][20]	= settr(19,0,55,1,0,"goto end", 0, 2, 0);
+	trans[0][24]	= settr(23,0,52,1,0,".(goto)", 0, 2, 0);
+	trans[0][21]	= settr(20,0,22,2,0,"else", 0, 2, 0);
+	trans[0][22]	= settr(21,0,52,39,39,"server_mutex = 1", 1, 2, 0);
+	trans[0][25]	= settr(24,0,26,40,0,"((((server_requests[id]<10)&&(id==2))&&client_to_server2?[1,_,_]))", 1, 2, 0);
+	trans[0][26]	= settr(25,0,33,1,0,"(1)", 0, 2, 0);
+	T = trans[ 0][33] = settr(32,2,0,0,0,"ATOMIC", 1, 2, 0);
+	T->nxt	= settr(32,2,31,0,0,"ATOMIC", 1, 2, 0);
+	T = trans[0][31] = settr(30,2,0,0,0,"IF", 1, 2, 0);
+	T = T->nxt	= settr(30,2,27,0,0,"IF", 1, 2, 0);
+	    T->nxt	= settr(30,2,29,0,0,"IF", 1, 2, 0);
+	trans[0][27]	= settr(26,4,34,41,41,"((server_mutex==1))", 1, 2, 0); /* m: 28 -> 34,0 */
 	reached0[28] = 1;
-	trans[0][24]	= settr(23,2,25,2,0,"else", 1, 2, 0);
-	trans[0][25]	= settr(24,2,36,36,36,"(1)", 1, 2, 0); /* m: 28 -> 36,0 */
-	reached0[28] = 1;
-	trans[0][28]	= settr(27,2,36,37,37,"state[serverId] = 1", 1, 2, 0); /* m: 29 -> 0,36 */
-	reached0[29] = 1;
-	trans[0][29]	= settr(0,0,0,0,0,"connect[serverId] = 0",0,0,0);
-	trans[0][30]	= settr(0,0,0,0,0,"i = 0",0,0,0);
-	trans[0][37]	= settr(36,2,36,1,0,".(goto)", 1, 2, 0);
-	T = trans[0][36] = settr(35,2,0,0,0,"DO", 1, 2, 0);
-	T = T->nxt	= settr(35,2,31,0,0,"DO", 1, 2, 0);
-	    T->nxt	= settr(35,2,34,0,0,"DO", 1, 2, 0);
-	trans[0][31]	= settr(30,2,36,38,38,"((i<=(3-1)))", 1, 2, 0); /* m: 32 -> 36,0 */
-	reached0[32] = 1;
-	trans[0][32]	= settr(0,0,0,0,0,"votesGranted[i] = 0",0,0,0);
-	trans[0][33]	= settr(0,0,0,0,0,"i = (i+1)",0,0,0);
-	trans[0][34]	= settr(33,2,38,2,0,"else", 1, 2, 0);
-	trans[0][35]	= settr(34,2,38,1,0,"goto :b1", 1, 2, 0);
-	trans[0][38]	= settr(37,2,39,1,0,"break", 1, 2, 0);
-	trans[0][39]	= settr(38,0,372,39,39,"votedFor = 10", 1, 2, 0);
-	trans[0][41]	= settr(40,0,48,40,0,"((state[serverId]==1))", 1, 2, 0);
-	T = trans[ 0][48] = settr(47,2,0,0,0,"ATOMIC", 1, 2, 0);
-	T->nxt	= settr(47,2,42,0,0,"ATOMIC", 1, 2, 0);
-	trans[0][42]	= settr(41,0,372,41,41,"printf('SERVER %d: Recovering from crash,becoming follower\\n',serverId)", 1, 2, 0); /* m: 43 -> 0,372 */
-	reached0[43] = 1;
-	trans[0][43]	= settr(0,0,0,0,0,"state[serverId] = 2",0,0,0);
-	trans[0][44]	= settr(0,0,0,0,0,"votedFor = 10",0,0,0);
-	trans[0][45]	= settr(0,0,0,0,0,"time_out[serverId] = 1",0,0,0);
-	trans[0][46]	= settr(0,0,0,0,0,"connect[serverId] = (3-1)",0,0,0);
-	trans[0][47]	= settr(0,0,0,0,0,"consecutiveCrashes[serverId] = 0",0,0,0);
-	trans[0][49]	= settr(48,0,52,42,0,"((((state[serverId]!=1)&&(state[serverId]!=4))&&(time_out[serverId]>0)))", 1, 2, 0);
-	T = trans[ 0][52] = settr(51,2,0,0,0,"ATOMIC", 1, 2, 0);
-	T->nxt	= settr(51,2,50,0,0,"ATOMIC", 1, 2, 0);
-	trans[0][50]	= settr(49,0,372,43,43,"time_out[serverId] = (time_out[serverId]-1)", 1, 2, 0); /* m: 51 -> 0,372 */
-	reached0[51] = 1;
-	trans[0][51]	= settr(0,0,0,0,0,"printf('SERVER %d: Timer tick,time_out now %d\\n',serverId,time_out[serverId])",0,0,0);
-	trans[0][53]	= settr(52,0,99,44,0,"(((state[serverId]==2)&&(time_out[serverId]==0)))", 1, 2, 0);
-	T = trans[ 0][99] = settr(98,2,0,0,0,"ATOMIC", 1, 2, 0);
-	T->nxt	= settr(98,2,54,0,0,"ATOMIC", 1, 3, 0);
-	trans[0][54]	= settr(53,2,64,45,45,"printf('SERVER %d: Timeout occurred (time_out = 0),becoming candidate\\n',serverId)", 1, 3, 0); /* m: 55 -> 0,64 */
-	reached0[55] = 1;
-	trans[0][55]	= settr(0,0,0,0,0,"state[serverId] = 3",0,0,0);
-	trans[0][56]	= settr(0,0,0,0,0,"currentTerm[serverId] = (currentTerm[serverId]+1)",0,0,0);
-	trans[0][57]	= settr(0,0,0,0,0,"votedFor = serverId",0,0,0);
-	trans[0][58]	= settr(0,0,0,0,0,"i = 0",0,0,0);
-	trans[0][65]	= settr(64,2,64,1,0,".(goto)", 1, 3, 0);
-	T = trans[0][64] = settr(63,2,0,0,0,"DO", 1, 3, 0);
-	T = T->nxt	= settr(63,2,59,0,0,"DO", 1, 3, 0);
-	    T->nxt	= settr(63,2,62,0,0,"DO", 1, 3, 0);
-	trans[0][59]	= settr(58,2,64,46,46,"((i<=(3-1)))", 1, 3, 0); /* m: 60 -> 64,0 */
-	reached0[60] = 1;
-	trans[0][60]	= settr(0,0,0,0,0,"votesGranted[i] = 0",0,0,0);
-	trans[0][61]	= settr(0,0,0,0,0,"i = (i+1)",0,0,0);
-	trans[0][62]	= settr(61,2,67,2,0,"else", 1, 3, 0);
-	trans[0][63]	= settr(62,2,67,1,0,"goto :b2", 1, 3, 0); /* m: 67 -> 0,80 */
-	reached0[67] = 1;
-	trans[0][66]	= settr(65,2,67,1,0,"break", 1, 3, 0);
-	trans[0][67]	= settr(66,2,80,47,47,"votesGranted[serverId] = 1", 1, 3, 0); /* m: 68 -> 0,80 */
-	reached0[68] = 1;
-	trans[0][68]	= settr(0,0,0,0,0,"outMsg.messageType = 2",0,0,0);
-	trans[0][69]	= settr(0,0,0,0,0,"outMsg.sender = serverId",0,0,0);
-	trans[0][70]	= settr(0,0,0,0,0,"outMsg.requestVote.term = currentTerm[serverId]",0,0,0);
-	T = trans[0][80] = settr(79,2,0,0,0,"IF", 1, 3, 0);
-	T = T->nxt	= settr(79,2,71,0,0,"IF", 1, 3, 0);
-	T = T->nxt	= settr(79,2,74,0,0,"IF", 1, 3, 0);
-	    T->nxt	= settr(79,2,77,0,0,"IF", 1, 3, 0);
-	trans[0][71]	= settr(70,2,95,48,48,"((logs[serverId].logs[0]==0))", 1, 3, 0); /* m: 72 -> 95,0 */
-	reached0[72] = 1;
-	trans[0][72]	= settr(0,0,0,0,0,"outMsg.requestVote.lastLogTerm = 0",0,0,0);
-	trans[0][73]	= settr(0,0,0,0,0,"outMsg.requestVote.lastLogIndex = 0",0,0,0);
-	trans[0][81]	= settr(80,2,82,1,0,".(goto)", 1, 3, 0); /* m: 82 -> 0,95 */
-	reached0[82] = 1;
-	trans[0][74]	= settr(73,2,95,49,49,"(((logs[serverId].logs[0]!=0)&&(logs[serverId].logs[1]==0)))", 1, 3, 0); /* m: 75 -> 95,0 */
-	reached0[75] = 1;
-	trans[0][75]	= settr(0,0,0,0,0,"outMsg.requestVote.lastLogTerm = logs[serverId].logs[0]",0,0,0);
-	trans[0][76]	= settr(0,0,0,0,0,"outMsg.requestVote.lastLogIndex = 1",0,0,0);
-	trans[0][77]	= settr(76,2,95,50,50,"(((logs[serverId].logs[0]!=0)&&(logs[serverId].logs[1]!=0)))", 1, 3, 0); /* m: 78 -> 95,0 */
-	reached0[78] = 1;
-	trans[0][78]	= settr(0,0,0,0,0,"outMsg.requestVote.lastLogTerm = logs[serverId].logs[1]",0,0,0);
-	trans[0][79]	= settr(0,0,0,0,0,"outMsg.requestVote.lastLogIndex = 2",0,0,0);
-	trans[0][82]	= settr(81,2,95,51,51,"i = 0", 1, 3, 0);
-	trans[0][96]	= settr(95,2,95,1,0,".(goto)", 1, 3, 0);
-	T = trans[0][95] = settr(94,2,0,0,0,"DO", 1, 3, 0);
-	T = T->nxt	= settr(94,2,83,0,0,"DO", 1, 3, 0);
-	    T->nxt	= settr(94,2,93,0,0,"DO", 1, 3, 0);
-	trans[0][83]	= settr(82,2,90,52,0,"((i<=(3-1)))", 1, 3, 0);
-	T = trans[0][90] = settr(89,2,0,0,0,"IF", 1, 3, 0);
-	T = T->nxt	= settr(89,2,84,0,0,"IF", 1, 3, 0);
-	    T->nxt	= settr(89,2,88,0,0,"IF", 1, 3, 0);
-	trans[0][84]	= settr(83,2,87,53,53,"((i!=serverId))", 1, 3, 0); /* m: 85 -> 87,0 */
-	reached0[85] = 1;
-	trans[0][85]	= settr(0,0,0,0,0,"outMsg.receiver = i",0,0,0);
-	trans[0][86]	= settr(0,0,0,0,0,"printf('SERVER %d: Sending RequestVote to server %d for term %d\\n',serverId,i,currentTerm[serverId])",0,0,0);
-	trans[0][87]	= settr(86,2,95,54,54,"toNodes[i]!outMsg.messageType,outMsg.sender,outMsg.receiver,outMsg.appendEntry.term,outMsg.appendEntry.leaderCommit,outMsg.appendEntry.index,outMsg.appendEntry.prevLogTerm,outMsg.appendEntryResponse.term,outMsg.appendEntryResponse.success,outMsg.requestVote.term,outMsg.requestVote.lastLogIndex,outMsg.requestVote.lastLogTerm,outMsg.requestVoteResponse.term,outMsg.requestVoteResponse.voteGranted", 1, 3, 0); /* m: 92 -> 95,0 */
-	reached0[92] = 1;
-	trans[0][91]	= settr(90,2,92,1,0,".(goto)", 1, 3, 0); /* m: 92 -> 0,95 */
-	reached0[92] = 1;
-	trans[0][88]	= settr(87,2,89,2,0,"else", 1, 3, 0);
-	trans[0][89]	= settr(88,2,95,55,55,"(1)", 1, 3, 0); /* m: 92 -> 95,0 */
-	reached0[92] = 1;
-	trans[0][92]	= settr(91,2,95,56,56,"i = (i+1)", 1, 3, 0);
-	trans[0][93]	= settr(92,2,97,2,0,"else", 1, 3, 0);
-	trans[0][94]	= settr(93,2,97,1,0,"goto :b3", 1, 3, 0);
-	trans[0][97]	= settr(96,2,98,1,0,"break", 1, 3, 0);
-	trans[0][98]	= settr(97,0,372,57,0,"printf('SERVER %d: Now candidate for term %d,voted for self\\n',serverId,currentTerm[serverId])", 1, 3, 0);
-	trans[0][100]	= settr(99,0,148,58,0,"(((state[serverId]==3)&&(time_out[serverId]==0)))", 1, 2, 0);
-	T = trans[ 0][148] = settr(147,2,0,0,0,"ATOMIC", 1, 2, 0);
-	T->nxt	= settr(147,2,101,0,0,"ATOMIC", 1, 3, 0);
-	trans[0][101]	= settr(100,2,113,59,59,"voteCount = 0", 1, 3, 0); /* m: 102 -> 0,113 */
-	reached0[102] = 1;
-	trans[0][102]	= settr(0,0,0,0,0,"i = 0",0,0,0);
-	trans[0][114]	= settr(113,2,113,1,0,".(goto)", 1, 3, 0);
-	T = trans[0][113] = settr(112,2,0,0,0,"DO", 1, 3, 0);
-	T = T->nxt	= settr(112,2,103,0,0,"DO", 1, 3, 0);
-	    T->nxt	= settr(112,2,111,0,0,"DO", 1, 3, 0);
-	trans[0][103]	= settr(102,2,108,60,0,"((i<=(3-1)))", 1, 3, 0);
-	T = trans[0][108] = settr(107,2,0,0,0,"IF", 1, 3, 0);
-	T = T->nxt	= settr(107,2,104,0,0,"IF", 1, 3, 0);
-	    T->nxt	= settr(107,2,106,0,0,"IF", 1, 3, 0);
-	trans[0][104]	= settr(103,2,113,61,61,"(votesGranted[i])", 1, 3, 0); /* m: 105 -> 113,0 */
-	reached0[105] = 1;
-	trans[0][105]	= settr(0,0,0,0,0,"voteCount = (voteCount+1)",0,0,0);
-	trans[0][109]	= settr(108,2,110,1,0,".(goto)", 1, 3, 0); /* m: 110 -> 0,113 */
-	reached0[110] = 1;
-	trans[0][106]	= settr(105,2,107,2,0,"else", 1, 3, 0);
-	trans[0][107]	= settr(106,2,113,62,62,"(1)", 1, 3, 0); /* m: 110 -> 113,0 */
-	reached0[110] = 1;
-	trans[0][110]	= settr(109,2,113,63,63,"i = (i+1)", 1, 3, 0);
-	trans[0][111]	= settr(110,2,146,2,0,"else", 1, 3, 0);
-	trans[0][112]	= settr(111,2,146,1,0,"goto :b4", 1, 3, 0);
-	trans[0][115]	= settr(114,2,146,1,0,"break", 1, 3, 0);
-	T = trans[0][146] = settr(145,2,0,0,0,"IF", 1, 3, 0);
-	T = T->nxt	= settr(145,2,116,0,0,"IF", 1, 3, 0);
-	    T->nxt	= settr(145,2,143,0,0,"IF", 1, 3, 0);
-	trans[0][116]	= settr(115,2,140,64,64,"((voteCount>(3/2)))", 1, 3, 0); /* m: 117 -> 140,0 */
-	reached0[117] = 1;
-	trans[0][117]	= settr(0,0,0,0,0,"state[serverId] = 4",0,0,0);
-	trans[0][118]	= settr(0,0,0,0,0,"leaders = (leaders+1)",0,0,0);
-	trans[0][119]	= settr(0,0,0,0,0,"isLeader = 1",0,0,0);
-	trans[0][120]	= settr(0,0,0,0,0,"leader[serverId] = 1",0,0,0);
-	trans[0][121]	= settr(0,0,0,0,0,"printf('SERVER %d: Becoming leader for term %d with %d votes\\n',serverId,currentTerm[serverId],voteCount)",0,0,0);
-	trans[0][122]	= settr(0,0,0,0,0,"i = 0",0,0,0);
-	trans[0][141]	= settr(140,2,140,1,0,".(goto)", 1, 3, 0);
-	T = trans[0][140] = settr(139,2,0,0,0,"DO", 1, 3, 0);
-	T = T->nxt	= settr(139,2,123,0,0,"DO", 1, 3, 0);
-	    T->nxt	= settr(139,2,138,0,0,"DO", 1, 3, 0);
-	trans[0][123]	= settr(122,2,135,65,0,"((i<=(3-1)))", 1, 3, 0);
-	T = trans[0][135] = settr(134,2,0,0,0,"IF", 1, 3, 0);
-	T = T->nxt	= settr(134,2,124,0,0,"IF", 1, 3, 0);
-	    T->nxt	= settr(134,2,133,0,0,"IF", 1, 3, 0);
-	trans[0][124]	= settr(123,2,132,66,66,"((i!=serverId))", 1, 3, 0); /* m: 125 -> 132,0 */
-	reached0[125] = 1;
-	trans[0][125]	= settr(0,0,0,0,0,"outMsg.messageType = 4",0,0,0);
-	trans[0][126]	= settr(0,0,0,0,0,"outMsg.sender = serverId",0,0,0);
-	trans[0][127]	= settr(0,0,0,0,0,"outMsg.receiver = i",0,0,0);
-	trans[0][128]	= settr(0,0,0,0,0,"outMsg.appendEntry.term = currentTerm[serverId]",0,0,0);
-	trans[0][129]	= settr(0,0,0,0,0,"outMsg.appendEntry.leaderCommit = commitIndex[serverId]",0,0,0);
-	trans[0][130]	= settr(0,0,0,0,0,"outMsg.appendEntry.index = 10",0,0,0);
-	trans[0][131]	= settr(0,0,0,0,0,"printf('SERVER %d: Sending initial heartbeat to server %d\\n',serverId,i)",0,0,0);
-	trans[0][132]	= settr(131,2,140,67,67,"toNodes[i]!outMsg.messageType,outMsg.sender,outMsg.receiver,outMsg.appendEntry.term,outMsg.appendEntry.leaderCommit,outMsg.appendEntry.index,outMsg.appendEntry.prevLogTerm,outMsg.appendEntryResponse.term,outMsg.appendEntryResponse.success,outMsg.requestVote.term,outMsg.requestVote.lastLogIndex,outMsg.requestVote.lastLogTerm,outMsg.requestVoteResponse.term,outMsg.requestVoteResponse.voteGranted", 1, 3, 0); /* m: 137 -> 140,0 */
-	reached0[137] = 1;
-	trans[0][136]	= settr(135,2,137,1,0,".(goto)", 1, 3, 0); /* m: 137 -> 0,140 */
-	reached0[137] = 1;
-	trans[0][133]	= settr(132,2,134,2,0,"else", 1, 3, 0);
-	trans[0][134]	= settr(133,2,140,68,68,"(1)", 1, 3, 0); /* m: 137 -> 140,0 */
-	reached0[137] = 1;
-	trans[0][137]	= settr(136,2,140,69,69,"i = (i+1)", 1, 3, 0);
-	trans[0][138]	= settr(137,2,142,2,0,"else", 1, 3, 0);
-	trans[0][139]	= settr(138,2,142,1,0,"goto :b5", 1, 3, 0);
-	trans[0][142]	= settr(141,2,147,1,0,"break", 1, 3, 0);
-	trans[0][147]	= settr(146,0,372,70,70,".(goto)", 1, 3, 0);
-	trans[0][143]	= settr(142,2,144,2,0,"else", 1, 3, 0);
-	trans[0][144]	= settr(143,0,372,71,71,"printf('SERVER %d: Election timeout without majority,restarting election\\n',serverId)", 1, 3, 0); /* m: 145 -> 0,372 */
-	reached0[145] = 1;
-	trans[0][145]	= settr(0,0,0,0,0,"time_out[serverId] = 1",0,0,0);
-	trans[0][149]	= settr(148,0,152,72,0,"((state[serverId]==2))", 1, 2, 0);
-	T = trans[ 0][152] = settr(151,2,0,0,0,"ATOMIC", 1, 2, 0);
-	T->nxt	= settr(151,2,150,0,0,"ATOMIC", 1, 2, 0);
-	trans[0][150]	= settr(149,0,372,73,73,"printf('SERVER %d: Restarting as follower,resetting timeout\\n',serverId)", 1, 2, 0); /* m: 151 -> 0,372 */
-	reached0[151] = 1;
-	trans[0][151]	= settr(0,0,0,0,0,"time_out[serverId] = 1",0,0,0);
-	trans[0][153]	= settr(152,0,326,74,0,"((toNodes[serverId]?[msg.messageType,msg.sender,msg.receiver,msg.appendEntry.term,msg.appendEntry.leaderCommit,msg.appendEntry.index,msg.appendEntry.prevLogTerm,msg.appendEntryResponse.term,msg.appendEntryResponse.success,msg.requestVote.term,msg.requestVote.lastLogIndex,msg.requestVote.lastLogTerm,msg.requestVoteResponse.term,msg.requestVoteResponse.voteGranted]&&(state[serverId]!=1)))", 1, 2, 0);
-	T = trans[ 0][326] = settr(325,2,0,0,0,"ATOMIC", 1, 2, 0);
-	T->nxt	= settr(325,2,154,0,0,"ATOMIC", 1, 503, 3);
-	trans[0][154]	= settr(153,2,324,75,75,"toNodes[serverId]?msg.messageType,msg.sender,msg.receiver,msg.appendEntry.term,msg.appendEntry.leaderCommit,msg.appendEntry.index,msg.appendEntry.prevLogTerm,msg.appendEntryResponse.term,msg.appendEntryResponse.success,msg.requestVote.term,msg.requestVote.lastLogIndex,msg.requestVote.lastLogTerm,msg.requestVoteResponse.term,msg.requestVoteResponse.voteGranted", 1, 503, 3); /* m: 155 -> 324,0 */
-	reached0[155] = 1;
-	trans[0][155]	= settr(0,0,0,0,0,"sender = msg.sender",0,0,0);
-	T = trans[0][324] = settr(323,2,0,0,0,"IF", 1, 503, 3);
-	T = T->nxt	= settr(323,2,156,0,0,"IF", 1, 503, 3);
-	T = T->nxt	= settr(323,2,207,0,0,"IF", 1, 503, 3);
-	T = T->nxt	= settr(323,2,231,0,0,"IF", 1, 503, 3);
-	    T->nxt	= settr(323,2,289,0,0,"IF", 1, 503, 3);
-	trans[0][156]	= settr(155,2,175,76,76,"((msg.messageType==2))", 1, 503, 3); /* m: 157 -> 175,0 */
-	reached0[157] = 1;
-	trans[0][157]	= settr(0,0,0,0,0,"printf('SERVER %d: Received RequestVote from server %d for term %d\\n',serverId,sender,msg.requestVote.term)",0,0,0);
-	T = trans[0][175] = settr(174,2,0,0,0,"IF", 1, 503, 3);
-	T = T->nxt	= settr(174,2,158,0,0,"IF", 1, 503, 3);
-	    T->nxt	= settr(174,2,172,0,0,"IF", 1, 503, 3);
-	trans[0][158]	= settr(157,2,166,77,77,"((msg.requestVote.term>currentTerm[serverId]))", 1, 503, 3); /* m: 159 -> 166,0 */
-	reached0[159] = 1;
-	trans[0][159]	= settr(0,0,0,0,0,"printf('SERVER %d: Updating term from %d to %d and becoming follower\\n',serverId,currentTerm[serverId],msg.requestVote.term)",0,0,0);
-	T = trans[0][166] = settr(165,2,0,0,0,"IF", 1, 503, 3);
-	T = T->nxt	= settr(165,2,160,0,0,"IF", 1, 503, 3);
-	    T->nxt	= settr(165,2,164,0,0,"IF", 1, 503, 3);
-	trans[0][160]	= settr(159,2,189,78,78,"((state[serverId]==4))", 1, 503, 3); /* m: 161 -> 189,0 */
-	reached0[161] = 1;
-	trans[0][161]	= settr(0,0,0,0,0,"leaders = (leaders-1)",0,0,0);
-	trans[0][162]	= settr(0,0,0,0,0,"isLeader = (leaders>0)",0,0,0);
-	trans[0][163]	= settr(0,0,0,0,0,"leader[serverId] = 0",0,0,0);
-	trans[0][167]	= settr(166,2,168,1,0,".(goto)", 1, 503, 3); /* m: 168 -> 0,189 */
-	reached0[168] = 1;
-	trans[0][164]	= settr(163,2,165,2,0,"else", 1, 503, 3);
-	trans[0][165]	= settr(164,2,189,79,79,"(1)", 1, 503, 3); /* m: 168 -> 189,0 */
-	reached0[168] = 1;
-	trans[0][168]	= settr(167,2,189,80,80,"currentTerm[serverId] = msg.requestVote.term", 1, 503, 3); /* m: 169 -> 0,189 */
-	reached0[169] = 1;
-	trans[0][169]	= settr(0,0,0,0,0,"state[serverId] = 2",0,0,0);
-	trans[0][170]	= settr(0,0,0,0,0,"votedFor = 10",0,0,0);
-	trans[0][171]	= settr(0,0,0,0,0,"time_out[serverId] = 1",0,0,0);
-	trans[0][176]	= settr(175,2,189,1,0,".(goto)", 1, 503, 3);
-	trans[0][172]	= settr(171,2,174,81,81,"((msg.requestVote.term<=currentTerm[serverId]))", 1, 503, 3); /* m: 173 -> 174,0 */
-	reached0[173] = 1;
-	trans[0][173]	= settr(0,0,0,0,0,"printf('SERVER %d: RequestVote term %d <= current term %d\\n',serverId,msg.requestVote.term,currentTerm[serverId])",0,0,0);
-	trans[0][174]	= settr(173,2,189,1,0,"(1)", 1, 503, 3);
-	T = trans[0][189] = settr(188,2,0,0,0,"IF", 1, 503, 3);
-	T = T->nxt	= settr(188,2,177,0,0,"IF", 1, 503, 3);
-	T = T->nxt	= settr(188,2,181,0,0,"IF", 1, 503, 3);
-	    T->nxt	= settr(188,2,185,0,0,"IF", 1, 503, 3);
-	trans[0][177]	= settr(176,2,204,82,82,"((logs[serverId].logs[0]==0))", 1, 503, 3); /* m: 178 -> 204,0 */
-	reached0[178] = 1;
-	trans[0][178]	= settr(0,0,0,0,0,"lastLogTerm = 0",0,0,0);
-	trans[0][179]	= settr(0,0,0,0,0,"lastLogIndex = 0",0,0,0);
-	trans[0][180]	= settr(0,0,0,0,0,"printf('SERVER %d: My last log empty,lastLogTerm = 0,lastLogIndex = 0\\n',serverId)",0,0,0);
-	trans[0][190]	= settr(189,2,191,1,0,".(goto)", 1, 503, 3); /* m: 191 -> 0,204 */
-	reached0[191] = 1;
-	trans[0][181]	= settr(180,2,204,83,83,"(((logs[serverId].logs[0]!=0)&&(logs[serverId].logs[1]==0)))", 1, 503, 3); /* m: 182 -> 204,0 */
-	reached0[182] = 1;
-	trans[0][182]	= settr(0,0,0,0,0,"lastLogTerm = logs[serverId].logs[0]",0,0,0);
-	trans[0][183]	= settr(0,0,0,0,0,"lastLogIndex = 1",0,0,0);
-	trans[0][184]	= settr(0,0,0,0,0,"printf('SERVER %d: My last log at index 0,lastLogTerm = %d,lastLogIndex = 1\\n',serverId,lastLogTerm)",0,0,0);
-	trans[0][185]	= settr(184,2,204,84,84,"(((logs[serverId].logs[0]!=0)&&(logs[serverId].logs[1]!=0)))", 1, 503, 3); /* m: 186 -> 204,0 */
-	reached0[186] = 1;
-	trans[0][186]	= settr(0,0,0,0,0,"lastLogTerm = logs[serverId].logs[1]",0,0,0);
-	trans[0][187]	= settr(0,0,0,0,0,"lastLogIndex = 2",0,0,0);
-	trans[0][188]	= settr(0,0,0,0,0,"printf('SERVER %d: My last log at index 1,lastLogTerm = %d,lastLogIndex = 2\\n',serverId,lastLogTerm)",0,0,0);
-	trans[0][191]	= settr(190,2,204,85,85,"logOk = ((msg.requestVote.lastLogTerm>lastLogTerm)||((msg.requestVote.lastLogTerm==lastLogTerm)&&(msg.requestVote.lastLogIndex>=lastLogIndex)))", 1, 503, 3); /* m: 192 -> 0,204 */
-	reached0[192] = 1;
-	trans[0][192]	= settr(0,0,0,0,0,"voteGranted = (((msg.requestVote.term==currentTerm[serverId])&&logOk)&&((votedFor==10)||(votedFor==sender)))",0,0,0);
-	trans[0][193]	= settr(0,0,0,0,0,"outMsg.messageType = 1",0,0,0);
-	trans[0][194]	= settr(0,0,0,0,0,"outMsg.sender = serverId",0,0,0);
-	trans[0][195]	= settr(0,0,0,0,0,"outMsg.receiver = sender",0,0,0);
-	trans[0][196]	= settr(0,0,0,0,0,"outMsg.requestVoteResponse.term = currentTerm[serverId]",0,0,0);
-	trans[0][197]	= settr(0,0,0,0,0,"outMsg.requestVoteResponse.voteGranted = voteGranted",0,0,0);
-	T = trans[0][204] = settr(203,2,0,0,0,"IF", 1, 503, 3);
-	T = T->nxt	= settr(203,2,198,0,0,"IF", 1, 503, 3);
-	    T->nxt	= settr(203,2,201,0,0,"IF", 1, 503, 3);
-	trans[0][198]	= settr(197,2,206,86,86,"(voteGranted)", 1, 503, 3); /* m: 199 -> 206,0 */
-	reached0[199] = 1;
-	trans[0][199]	= settr(0,0,0,0,0,"votedFor = sender",0,0,0);
-	trans[0][200]	= settr(0,0,0,0,0,"printf('SERVER %d: Granting vote to server %d for term %d\\n',serverId,sender,currentTerm[serverId])",0,0,0);
-	trans[0][205]	= settr(204,2,206,1,0,".(goto)", 1, 503, 3);
-	trans[0][201]	= settr(200,2,203,87,87,"(!(voteGranted))", 1, 503, 3); /* m: 202 -> 203,0 */
-	reached0[202] = 1;
-	trans[0][202]	= settr(0,0,0,0,0,"printf('SERVER %d: Rejecting vote for server %d,term = %d,logOk = %d,votedFor = %d\\n',serverId,sender,currentTerm[serverId],logOk,votedFor)",0,0,0);
-	trans[0][203]	= settr(202,2,206,1,0,"(1)", 1, 503, 3);
-	trans[0][206]	= settr(205,0,372,88,88,"toNodes[sender]!outMsg.messageType,outMsg.sender,outMsg.receiver,outMsg.appendEntry.term,outMsg.appendEntry.leaderCommit,outMsg.appendEntry.index,outMsg.appendEntry.prevLogTerm,outMsg.appendEntryResponse.term,outMsg.appendEntryResponse.success,outMsg.requestVote.term,outMsg.requestVote.lastLogIndex,outMsg.requestVote.lastLogTerm,outMsg.requestVoteResponse.term,outMsg.requestVoteResponse.voteGranted", 1, 503, 3); /* m: 325 -> 372,0 */
-	reached0[325] = 1;
-	trans[0][325]	= settr(324,0,372,89,89,".(goto)", 1, 503, 3);
-	trans[0][207]	= settr(206,2,229,90,90,"((msg.messageType==1))", 1, 503, 3); /* m: 208 -> 229,0 */
-	reached0[208] = 1;
-	trans[0][208]	= settr(0,0,0,0,0,"printf('SERVER %d: Received RequestVoteResponse from server %d,term = %d,granted = %d\\n',serverId,sender,msg.requestVoteResponse.term,msg.requestVoteResponse.voteGranted)",0,0,0);
-	T = trans[0][229] = settr(228,2,0,0,0,"IF", 1, 503, 3);
-	T = T->nxt	= settr(228,2,209,0,0,"IF", 1, 503, 3);
-	T = T->nxt	= settr(228,2,223,0,0,"IF", 1, 503, 3);
-	    T->nxt	= settr(228,2,226,0,0,"IF", 1, 503, 3);
-	trans[0][209]	= settr(208,2,217,91,91,"((msg.requestVoteResponse.term>currentTerm[serverId]))", 1, 503, 3); /* m: 210 -> 217,0 */
-	reached0[210] = 1;
-	trans[0][210]	= settr(0,0,0,0,0,"printf('SERVER %d: Updating term from %d to %d and becoming follower\\n',serverId,currentTerm[serverId],msg.requestVoteResponse.term)",0,0,0);
-	T = trans[0][217] = settr(216,2,0,0,0,"IF", 1, 503, 3);
-	T = T->nxt	= settr(216,2,211,0,0,"IF", 1, 503, 3);
-	    T->nxt	= settr(216,2,215,0,0,"IF", 1, 503, 3);
-	trans[0][211]	= settr(210,0,372,92,92,"((state[serverId]==4))", 1, 503, 3); /* m: 212 -> 372,0 */
-	reached0[212] = 1;
-	trans[0][212]	= settr(0,0,0,0,0,"leaders = (leaders-1)",0,0,0);
-	trans[0][213]	= settr(0,0,0,0,0,"isLeader = (leaders>0)",0,0,0);
-	trans[0][214]	= settr(0,0,0,0,0,"leader[serverId] = 0",0,0,0);
-	trans[0][218]	= settr(217,2,219,1,0,".(goto)", 1, 503, 3); /* m: 219 -> 0,372 */
-	reached0[219] = 1;
-	trans[0][215]	= settr(214,2,216,2,0,"else", 1, 503, 3);
-	trans[0][216]	= settr(215,0,372,93,93,"(1)", 1, 503, 3); /* m: 219 -> 372,0 */
-	reached0[219] = 1;
-	trans[0][219]	= settr(218,0,372,94,94,"currentTerm[serverId] = msg.requestVoteResponse.term", 1, 503, 3); /* m: 220 -> 0,372 */
-	reached0[220] = 1;
-	trans[0][220]	= settr(0,0,0,0,0,"state[serverId] = 2",0,0,0);
-	trans[0][221]	= settr(0,0,0,0,0,"votedFor = 10",0,0,0);
-	trans[0][222]	= settr(0,0,0,0,0,"time_out[serverId] = 1",0,0,0);
-	trans[0][230]	= settr(229,0,372,95,95,".(goto)", 1, 503, 3); /* m: 325 -> 0,372 */
-	reached0[325] = 1;
-	trans[0][223]	= settr(222,0,372,96,96,"((((msg.requestVoteResponse.term==currentTerm[serverId])&&msg.requestVoteResponse.voteGranted)&&(state[serverId]==3)))", 1, 503, 3); /* m: 224 -> 372,0 */
-	reached0[224] = 1;
-	trans[0][224]	= settr(0,0,0,0,0,"votesGranted[sender] = 1",0,0,0);
-	trans[0][225]	= settr(0,0,0,0,0,"printf('SERVER %d: Vote granted by server %d\\n',serverId,sender)",0,0,0);
-	trans[0][226]	= settr(225,2,227,2,0,"else", 1, 503, 3);
-	trans[0][227]	= settr(226,2,228,97,0,"printf('SERVER %d: Vote not granted by server %d or no longer a candidate\\n',serverId,sender)", 1, 503, 3);
-	trans[0][228]	= settr(227,0,372,98,98,"(1)", 1, 503, 3); /* m: 230 -> 372,0 */
-	reached0[230] = 1;
-	trans[0][231]	= settr(230,2,250,99,99,"((msg.messageType==4))", 1, 503, 3); /* m: 232 -> 250,0 */
-	reached0[232] = 1;
-	trans[0][232]	= settr(0,0,0,0,0,"printf('SERVER %d: Received AppendEntries from server %d,term = %d,index = %d\\n',serverId,sender,msg.appendEntry.term,msg.appendEntry.index)",0,0,0);
-	T = trans[0][250] = settr(249,2,0,0,0,"IF", 1, 503, 3);
-	T = T->nxt	= settr(249,2,233,0,0,"IF", 1, 503, 3);
-	    T->nxt	= settr(249,2,247,0,0,"IF", 1, 503, 3);
-	trans[0][233]	= settr(232,2,241,100,100,"((msg.appendEntry.term>currentTerm[serverId]))", 1, 503, 3); /* m: 234 -> 241,0 */
-	reached0[234] = 1;
-	trans[0][234]	= settr(0,0,0,0,0,"printf('SERVER %d: Updating term from %d to %d and becoming follower\\n',serverId,currentTerm[serverId],msg.appendEntry.term)",0,0,0);
-	T = trans[0][241] = settr(240,2,0,0,0,"IF", 1, 503, 3);
-	T = T->nxt	= settr(240,2,235,0,0,"IF", 1, 503, 3);
-	    T->nxt	= settr(240,2,239,0,0,"IF", 1, 503, 3);
-	trans[0][235]	= settr(234,2,265,101,101,"((state[serverId]==4))", 1, 503, 3); /* m: 236 -> 265,0 */
-	reached0[236] = 1;
-	trans[0][236]	= settr(0,0,0,0,0,"leaders = (leaders-1)",0,0,0);
-	trans[0][237]	= settr(0,0,0,0,0,"isLeader = (leaders>0)",0,0,0);
-	trans[0][238]	= settr(0,0,0,0,0,"leader[serverId] = 0",0,0,0);
-	trans[0][242]	= settr(241,2,243,1,0,".(goto)", 1, 503, 3); /* m: 243 -> 0,265 */
-	reached0[243] = 1;
-	trans[0][239]	= settr(238,2,240,2,0,"else", 1, 503, 3);
-	trans[0][240]	= settr(239,2,265,102,102,"(1)", 1, 503, 3); /* m: 243 -> 265,0 */
-	reached0[243] = 1;
-	trans[0][243]	= settr(242,2,265,103,103,"currentTerm[serverId] = msg.appendEntry.term", 1, 503, 3); /* m: 244 -> 0,265 */
-	reached0[244] = 1;
-	trans[0][244]	= settr(0,0,0,0,0,"state[serverId] = 2",0,0,0);
-	trans[0][245]	= settr(0,0,0,0,0,"votedFor = 10",0,0,0);
-	trans[0][246]	= settr(0,0,0,0,0,"time_out[serverId] = 1",0,0,0);
-	trans[0][251]	= settr(250,2,265,1,0,".(goto)", 1, 503, 3);
-	trans[0][247]	= settr(246,2,249,104,104,"((msg.appendEntry.term<=currentTerm[serverId]))", 1, 503, 3); /* m: 248 -> 249,0 */
-	reached0[248] = 1;
-	trans[0][248]	= settr(0,0,0,0,0,"printf('SERVER %d: AppendEntries term %d <= current term %d\\n',serverId,msg.appendEntry.term,currentTerm[serverId])",0,0,0);
-	trans[0][249]	= settr(248,2,265,1,0,"(1)", 1, 503, 3);
-	T = trans[0][265] = settr(264,2,0,0,0,"IF", 1, 503, 3);
-	T = T->nxt	= settr(264,2,252,0,0,"IF", 1, 503, 3);
-	    T->nxt	= settr(264,2,263,0,0,"IF", 1, 503, 3);
-	trans[0][252]	= settr(251,2,259,105,0,"((msg.appendEntry.term==currentTerm[serverId]))", 1, 503, 3);
-	T = trans[0][259] = settr(258,2,0,0,0,"IF", 1, 503, 3);
-	T = T->nxt	= settr(258,2,253,0,0,"IF", 1, 503, 3);
-	    T->nxt	= settr(258,2,257,0,0,"IF", 1, 503, 3);
-	trans[0][253]	= settr(252,2,286,106,106,"((state[serverId]==3))", 1, 503, 3); /* m: 254 -> 286,0 */
-	reached0[254] = 1;
-	trans[0][254]	= settr(0,0,0,0,0,"printf('SERVER %d: Stepping down from candidate to follower for term %d\\n',serverId,currentTerm[serverId])",0,0,0);
-	trans[0][255]	= settr(0,0,0,0,0,"state[serverId] = 2",0,0,0);
-	trans[0][256]	= settr(0,0,0,0,0,"votedFor = 10",0,0,0);
-	trans[0][260]	= settr(259,2,261,1,0,".(goto)", 1, 503, 3); /* m: 261 -> 0,286 */
-	reached0[261] = 1;
-	trans[0][257]	= settr(256,2,258,2,0,"else", 1, 503, 3);
-	trans[0][258]	= settr(257,2,286,107,107,"(1)", 1, 503, 3); /* m: 261 -> 286,0 */
-	reached0[261] = 1;
-	trans[0][261]	= settr(260,2,286,108,108,"time_out[serverId] = 1", 1, 503, 3); /* m: 262 -> 0,286 */
-	reached0[262] = 1;
-	trans[0][262]	= settr(0,0,0,0,0,"printf('SERVER %d: Reset timeout on AppendEntries from leader\\n',serverId)",0,0,0);
-	trans[0][266]	= settr(265,2,267,1,0,".(goto)", 1, 503, 3); /* m: 267 -> 0,286 */
-	reached0[267] = 1;
-	trans[0][263]	= settr(262,2,264,2,0,"else", 1, 503, 3);
-	trans[0][264]	= settr(263,2,286,109,109,"(1)", 1, 503, 3); /* m: 267 -> 286,0 */
-	reached0[267] = 1;
-	trans[0][267]	= settr(266,2,286,110,110,"logOk = ((msg.appendEntry.index==0)||((msg.appendEntry.index==1)&&(msg.appendEntry.prevLogTerm==logs[serverId].logs[0])))", 1, 503, 3); /* m: 268 -> 0,286 */
-	reached0[268] = 1;
-	trans[0][268]	= settr(0,0,0,0,0,"outMsg.messageType = 3",0,0,0);
-	trans[0][269]	= settr(0,0,0,0,0,"outMsg.sender = serverId",0,0,0);
-	trans[0][270]	= settr(0,0,0,0,0,"outMsg.receiver = sender",0,0,0);
-	trans[0][271]	= settr(0,0,0,0,0,"outMsg.appendEntryResponse.term = currentTerm[serverId]",0,0,0);
-	T = trans[0][286] = settr(285,2,0,0,0,"IF", 1, 503, 3);
-	T = T->nxt	= settr(285,2,272,0,0,"IF", 1, 503, 3);
-	    T->nxt	= settr(285,2,275,0,0,"IF", 1, 503, 3);
-	trans[0][272]	= settr(271,2,288,111,111,"(((msg.appendEntry.term<currentTerm[serverId])||(((msg.appendEntry.term==currentTerm[serverId])&&(state[serverId]==2))&&!(logOk))))", 1, 503, 3); /* m: 273 -> 288,0 */
-	reached0[273] = 1;
-	trans[0][273]	= settr(0,0,0,0,0,"outMsg.appendEntryResponse.success = 0",0,0,0);
-	trans[0][274]	= settr(0,0,0,0,0,"printf('SERVER %d: Rejecting AppendEntries,term = %d,logOk = %d\\n',serverId,currentTerm[serverId],logOk)",0,0,0);
-	trans[0][287]	= settr(286,2,288,1,0,".(goto)", 1, 503, 3);
-	trans[0][275]	= settr(274,2,282,112,112,"((((msg.appendEntry.term==currentTerm[serverId])&&(state[serverId]==2))&&logOk))", 1, 503, 3); /* m: 276 -> 282,0 */
-	reached0[276] = 1;
-	trans[0][276]	= settr(0,0,0,0,0,"outMsg.appendEntryResponse.success = 1",0,0,0);
-	trans[0][277]	= settr(0,0,0,0,0,"printf('SERVER %d: Accepting AppendEntries,updating log at index %d to term %d\\n',serverId,msg.appendEntry.index,msg.appendEntry.term)",0,0,0);
-	T = trans[0][282] = settr(281,2,0,0,0,"IF", 1, 503, 3);
-	T = T->nxt	= settr(281,2,278,0,0,"IF", 1, 503, 3);
-	    T->nxt	= settr(281,2,280,0,0,"IF", 1, 503, 3);
-	trans[0][278]	= settr(277,2,288,113,113,"((msg.appendEntry.index!=10))", 1, 503, 3); /* m: 279 -> 288,0 */
-	reached0[279] = 1;
-	trans[0][279]	= settr(0,0,0,0,0,"logs[serverId].logs[msg.appendEntry.index] = msg.appendEntry.term",0,0,0);
-	trans[0][283]	= settr(282,2,284,1,0,".(goto)", 1, 503, 3); /* m: 284 -> 0,288 */
-	reached0[284] = 1;
-	trans[0][280]	= settr(279,2,281,2,0,"else", 1, 503, 3);
-	trans[0][281]	= settr(280,2,288,114,114,"(1)", 1, 503, 3); /* m: 284 -> 288,0 */
-	reached0[284] = 1;
-	trans[0][284]	= settr(283,2,288,115,115,"commitIndex[serverId] = msg.appendEntry.leaderCommit", 1, 503, 3); /* m: 285 -> 0,288 */
-	reached0[285] = 1;
-	trans[0][285]	= settr(0,0,0,0,0,"printf('SERVER %d: Updated commitIndex to %d\\n',serverId,commitIndex[serverId])",0,0,0);
-	trans[0][288]	= settr(287,0,372,116,116,"toNodes[sender]!outMsg.messageType,outMsg.sender,outMsg.receiver,outMsg.appendEntry.term,outMsg.appendEntry.leaderCommit,outMsg.appendEntry.index,outMsg.appendEntry.prevLogTerm,outMsg.appendEntryResponse.term,outMsg.appendEntryResponse.success,outMsg.requestVote.term,outMsg.requestVote.lastLogIndex,outMsg.requestVote.lastLogTerm,outMsg.requestVoteResponse.term,outMsg.requestVoteResponse.voteGranted", 1, 503, 3); /* m: 325 -> 372,0 */
-	reached0[325] = 1;
-	trans[0][289]	= settr(288,2,322,117,117,"((msg.messageType==3))", 1, 503, 3); /* m: 290 -> 322,0 */
-	reached0[290] = 1;
-	trans[0][290]	= settr(0,0,0,0,0,"printf('SERVER %d: Received AppendEntriesResponse from server %d,term = %d,success = %d\\n',serverId,sender,msg.appendEntryResponse.term,msg.appendEntryResponse.success)",0,0,0);
-	T = trans[0][322] = settr(321,2,0,0,0,"IF", 1, 503, 3);
-	T = T->nxt	= settr(321,2,291,0,0,"IF", 1, 503, 3);
-	T = T->nxt	= settr(321,2,305,0,0,"IF", 1, 503, 3);
-	T = T->nxt	= settr(321,2,308,0,0,"IF", 1, 503, 3);
-	    T->nxt	= settr(321,2,319,0,0,"IF", 1, 503, 3);
-	trans[0][291]	= settr(290,2,299,118,118,"((msg.appendEntryResponse.term>currentTerm[serverId]))", 1, 503, 3); /* m: 292 -> 299,0 */
-	reached0[292] = 1;
-	trans[0][292]	= settr(0,0,0,0,0,"printf('SERVER %d: Updating term from %d to %d and becoming follower\\n',serverId,currentTerm[serverId],msg.appendEntryResponse.term)",0,0,0);
-	T = trans[0][299] = settr(298,2,0,0,0,"IF", 1, 503, 3);
-	T = T->nxt	= settr(298,2,293,0,0,"IF", 1, 503, 3);
-	    T->nxt	= settr(298,2,297,0,0,"IF", 1, 503, 3);
-	trans[0][293]	= settr(292,0,372,119,119,"((state[serverId]==4))", 1, 503, 3); /* m: 294 -> 372,0 */
-	reached0[294] = 1;
-	trans[0][294]	= settr(0,0,0,0,0,"leaders = (leaders-1)",0,0,0);
-	trans[0][295]	= settr(0,0,0,0,0,"isLeader = (leaders>0)",0,0,0);
-	trans[0][296]	= settr(0,0,0,0,0,"leader[serverId] = 0",0,0,0);
-	trans[0][300]	= settr(299,2,301,1,0,".(goto)", 1, 503, 3); /* m: 301 -> 0,372 */
-	reached0[301] = 1;
-	trans[0][297]	= settr(296,2,298,2,0,"else", 1, 503, 3);
-	trans[0][298]	= settr(297,0,372,120,120,"(1)", 1, 503, 3); /* m: 301 -> 372,0 */
-	reached0[301] = 1;
-	trans[0][301]	= settr(300,0,372,121,121,"currentTerm[serverId] = msg.appendEntryResponse.term", 1, 503, 3); /* m: 302 -> 0,372 */
-	reached0[302] = 1;
-	trans[0][302]	= settr(0,0,0,0,0,"state[serverId] = 2",0,0,0);
-	trans[0][303]	= settr(0,0,0,0,0,"votedFor = 10",0,0,0);
-	trans[0][304]	= settr(0,0,0,0,0,"time_out[serverId] = 1",0,0,0);
-	trans[0][323]	= settr(322,0,372,122,122,".(goto)", 1, 503, 3); /* m: 325 -> 0,372 */
-	reached0[325] = 1;
-	trans[0][305]	= settr(304,2,307,123,123,"((msg.appendEntryResponse.term<currentTerm[serverId]))", 1, 503, 3); /* m: 306 -> 307,0 */
-	reached0[306] = 1;
-	trans[0][306]	= settr(0,0,0,0,0,"printf('SERVER %d: Ignoring AppendEntriesResponse with lower term %d\\n',serverId,msg.appendEntryResponse.term)",0,0,0);
-	trans[0][307]	= settr(306,0,372,124,124,"(1)", 1, 503, 3); /* m: 323 -> 372,0 */
-	reached0[323] = 1;
-	trans[0][308]	= settr(307,2,317,125,125,"((((msg.appendEntryResponse.term==currentTerm[serverId])&&msg.appendEntryResponse.success)&&(state[serverId]==4)))", 1, 503, 3); /* m: 309 -> 317,0 */
-	reached0[309] = 1;
-	trans[0][309]	= settr(0,0,0,0,0,"printf('SERVER %d: Successful AppendEntries,considering commit advancement\\n',serverId)",0,0,0);
-	trans[0][310]	= settr(0,0,0,0,0,"connect[serverId] = (connect[serverId]+1)",0,0,0);
-	T = trans[0][317] = settr(316,2,0,0,0,"IF", 1, 503, 3);
-	T = T->nxt	= settr(316,2,311,0,0,"IF", 1, 503, 3);
-	    T->nxt	= settr(316,2,314,0,0,"IF", 1, 503, 3);
-	trans[0][311]	= settr(310,0,372,126,126,"(((commitIndex[serverId]==0)&&(logs[sender].logs[0]==logs[serverId].logs[0])))", 1, 503, 3); /* m: 312 -> 372,0 */
-	reached0[312] = 1;
-	trans[0][312]	= settr(0,0,0,0,0,"commitIndex[serverId] = 1",0,0,0);
-	trans[0][313]	= settr(0,0,0,0,0,"printf('SERVER %d: Advanced commitIndex to 1\\n',serverId)",0,0,0);
-	trans[0][318]	= settr(317,2,323,1,0,".(goto)", 1, 503, 3); /* m: 323 -> 0,372 */
-	reached0[323] = 1;
-	trans[0][314]	= settr(313,2,315,2,0,"else", 1, 503, 3);
-	trans[0][315]	= settr(314,2,316,127,0,"printf('SERVER %d: Cannot advance commitIndex further\\n',serverId)", 1, 503, 3);
-	trans[0][316]	= settr(315,0,372,128,128,"(1)", 1, 503, 3); /* m: 323 -> 372,0 */
-	reached0[323] = 1;
-	trans[0][319]	= settr(318,2,320,2,0,"else", 1, 503, 3);
-	trans[0][320]	= settr(319,2,321,129,0,"printf('SERVER %d: AppendEntriesResponse not successful or not leader\\n',serverId)", 1, 503, 3);
-	trans[0][321]	= settr(320,0,372,130,130,"(1)", 1, 503, 3); /* m: 323 -> 372,0 */
-	reached0[323] = 1;
-	trans[0][327]	= settr(326,0,360,131,0,"((state[serverId]==4))", 1, 2, 0);
-	T = trans[ 0][360] = settr(359,2,0,0,0,"ATOMIC", 1, 2, 0);
-	T->nxt	= settr(359,2,328,0,0,"ATOMIC", 1, 3, 0);
-	trans[0][328]	= settr(327,2,357,132,132,"i = 0", 1, 3, 0);
-	trans[0][358]	= settr(357,2,357,1,0,".(goto)", 1, 3, 0);
-	T = trans[0][357] = settr(356,2,0,0,0,"DO", 1, 3, 0);
-	T = T->nxt	= settr(356,2,329,0,0,"DO", 1, 3, 0);
-	    T->nxt	= settr(356,2,355,0,0,"DO", 1, 3, 0);
-	trans[0][329]	= settr(328,2,352,133,0,"((i<=(3-1)))", 1, 3, 0);
-	T = trans[0][352] = settr(351,2,0,0,0,"IF", 1, 3, 0);
-	T = T->nxt	= settr(351,2,330,0,0,"IF", 1, 3, 0);
-	    T->nxt	= settr(351,2,350,0,0,"IF", 1, 3, 0);
-	trans[0][330]	= settr(329,2,347,134,134,"((i!=serverId))", 1, 3, 0); /* m: 331 -> 347,0 */
-	reached0[331] = 1;
-	trans[0][331]	= settr(0,0,0,0,0,"outMsg.messageType = 4",0,0,0);
-	trans[0][332]	= settr(0,0,0,0,0,"outMsg.sender = serverId",0,0,0);
-	trans[0][333]	= settr(0,0,0,0,0,"outMsg.receiver = i",0,0,0);
-	trans[0][334]	= settr(0,0,0,0,0,"outMsg.appendEntry.term = currentTerm[serverId]",0,0,0);
-	trans[0][335]	= settr(0,0,0,0,0,"outMsg.appendEntry.leaderCommit = commitIndex[serverId]",0,0,0);
-	trans[0][336]	= settr(0,0,0,0,0,"printf('SERVER %d: Leader sending AppendEntries to server %d\\n',serverId,i)",0,0,0);
-	T = trans[0][347] = settr(346,2,0,0,0,"IF", 1, 3, 0);
-	T = T->nxt	= settr(346,2,337,0,0,"IF", 1, 3, 0);
-	T = T->nxt	= settr(346,2,340,0,0,"IF", 1, 3, 0);
-	    T->nxt	= settr(346,2,344,0,0,"IF", 1, 3, 0);
-	trans[0][337]	= settr(336,2,349,135,135,"((logs[serverId].logs[0]!=logs[i].logs[0]))", 1, 3, 0); /* m: 338 -> 349,0 */
-	reached0[338] = 1;
-	trans[0][338]	= settr(0,0,0,0,0,"outMsg.appendEntry.index = 0",0,0,0);
-	trans[0][339]	= settr(0,0,0,0,0,"printf('SERVER %d: Sending log at index 0,term = %d\\n',serverId,outMsg.appendEntry.term)",0,0,0);
-	trans[0][348]	= settr(347,2,349,1,0,".(goto)", 1, 3, 0);
-	trans[0][340]	= settr(339,2,349,136,136,"((((logs[serverId].logs[1]!=0)&&(logs[serverId].logs[0]==logs[i].logs[0]))&&(logs[serverId].logs[1]!=logs[i].logs[1])))", 1, 3, 0); /* m: 341 -> 349,0 */
-	reached0[341] = 1;
-	trans[0][341]	= settr(0,0,0,0,0,"outMsg.appendEntry.index = 1",0,0,0);
-	trans[0][342]	= settr(0,0,0,0,0,"outMsg.appendEntry.prevLogTerm = logs[i].logs[0]",0,0,0);
-	trans[0][343]	= settr(0,0,0,0,0,"printf('SERVER %d: Sending log at index 1,term = %d,prevLogTerm = %d\\n',serverId,outMsg.appendEntry.term,outMsg.appendEntry.prevLogTerm)",0,0,0);
-	trans[0][344]	= settr(343,2,345,2,0,"else", 1, 3, 0);
-	trans[0][345]	= settr(344,2,349,137,137,"outMsg.appendEntry.index = 10", 1, 3, 0); /* m: 346 -> 0,349 */
-	reached0[346] = 1;
-	trans[0][346]	= settr(0,0,0,0,0,"printf('SERVER %d: No new logs to send to server %d,sending heartbeat\\n',serverId,i)",0,0,0);
-	trans[0][349]	= settr(348,2,357,138,138,"toNodes[i]!outMsg.messageType,outMsg.sender,outMsg.receiver,outMsg.appendEntry.term,outMsg.appendEntry.leaderCommit,outMsg.appendEntry.index,outMsg.appendEntry.prevLogTerm,outMsg.appendEntryResponse.term,outMsg.appendEntryResponse.success,outMsg.requestVote.term,outMsg.requestVote.lastLogIndex,outMsg.requestVote.lastLogTerm,outMsg.requestVoteResponse.term,outMsg.requestVoteResponse.voteGranted", 1, 3, 0); /* m: 354 -> 357,0 */
-	reached0[354] = 1;
-	trans[0][353]	= settr(352,2,354,1,0,".(goto)", 1, 3, 0); /* m: 354 -> 0,357 */
-	reached0[354] = 1;
-	trans[0][350]	= settr(349,2,351,2,0,"else", 1, 3, 0);
-	trans[0][351]	= settr(350,2,357,139,139,"(1)", 1, 3, 0); /* m: 354 -> 357,0 */
-	reached0[354] = 1;
-	trans[0][354]	= settr(353,2,357,140,140,"i = (i+1)", 1, 3, 0);
-	trans[0][355]	= settr(354,2,356,2,0,"else", 1, 3, 0);
-	trans[0][356]	= settr(355,2,359,1,0,"goto :b6", 1, 3, 0);
-	trans[0][359]	= settr(358,0,372,1,0,"break", 1, 3, 0);
-	trans[0][361]	= settr(360,0,371,141,0,"(((state[serverId]==4)&&(logs[serverId].logs[1]==0)))", 1, 2, 0);
-	T = trans[ 0][371] = settr(370,2,0,0,0,"ATOMIC", 1, 2, 0);
-	T->nxt	= settr(370,2,368,0,0,"ATOMIC", 1, 2, 0);
-	T = trans[0][368] = settr(367,2,0,0,0,"IF", 1, 2, 0);
-	T = T->nxt	= settr(367,2,362,0,0,"IF", 1, 2, 0);
-	    T->nxt	= settr(367,2,365,0,0,"IF", 1, 2, 0);
-	trans[0][362]	= settr(361,2,370,142,142,"((logs[serverId].logs[0]==0))", 1, 2, 0); /* m: 363 -> 370,0 */
-	reached0[363] = 1;
-	trans[0][363]	= settr(0,0,0,0,0,"logs[serverId].logs[0] = currentTerm[serverId]",0,0,0);
-	trans[0][364]	= settr(0,0,0,0,0,"printf('SERVER %d: Client request,adding entry at index 0 with term %d\\n',serverId,currentTerm[serverId])",0,0,0);
-	trans[0][369]	= settr(368,2,370,143,143,".(goto)", 1, 2, 0);
-	trans[0][365]	= settr(364,2,370,144,144,"((logs[serverId].logs[0]!=0))", 1, 2, 0); /* m: 366 -> 370,0 */
-	reached0[366] = 1;
-	trans[0][366]	= settr(0,0,0,0,0,"logs[serverId].logs[1] = currentTerm[serverId]",0,0,0);
-	trans[0][367]	= settr(0,0,0,0,0,"printf('SERVER %d: Client request,adding entry at index 1 with term %d\\n',serverId,currentTerm[serverId])",0,0,0);
-	trans[0][370]	= settr(369,0,372,1,0,"(1)", 1, 2, 0);
-	trans[0][374]	= settr(373,0,375,1,0,"break", 0, 2, 0);
-	trans[0][375]	= settr(374,0,376,145,0,"printf('SERVER %d: Process terminated\\n',serverId)", 0, 2, 0);
-	trans[0][376]	= settr(375,0,0,146,146,"-end-", 0, 3500, 0);
+	trans[0][28]	= settr(0,0,0,0,0,"server_mutex = 0",0,0,0);
+	trans[0][32]	= settr(31,0,34,1,0,".(goto)", 1, 2, 0);
+	trans[0][29]	= settr(28,2,30,2,0,"else", 1, 2, 0);
+	trans[0][30]	= settr(29,0,49,1,0,"goto wait_for_mutex", 1, 2, 0);
+	trans[0][34]	= settr(33,0,35,42,42,"client_to_server2?msg_type,client_id,client_pid", 1, 504, 0);
+	trans[0][35]	= settr(34,0,36,43,0,"printf('Server %d (pid %d) processing request from Client %d (pid %d)\\n',id,_pid,client_id,client_pid)", 0, 2, 0);
+	trans[0][36]	= settr(35,0,37,44,44,"server_busy[id] = 1", 1, 2, 0);
+	trans[0][37]	= settr(36,0,38,45,45,"server_busy[id] = 0", 1, 2, 0);
+	trans[0][38]	= settr(37,0,39,46,46,"server_to_client!2,id,client_pid", 1, 5, 0);
+	trans[0][39]	= settr(38,0,40,47,47,"server_requests[id] = (server_requests[id]+1)", 1, 2, 0);
+	trans[0][40]	= settr(39,0,47,48,48,"messages_processed = (messages_processed+1)", 1, 2, 0);
+	T = trans[0][47] = settr(46,0,0,0,0,"IF", 0, 2, 0);
+	T = T->nxt	= settr(46,0,41,0,0,"IF", 0, 2, 0);
+	    T->nxt	= settr(46,0,45,0,0,"IF", 0, 2, 0);
+	trans[0][41]	= settr(40,0,42,49,0,"((server_requests[id]==10))", 1, 2, 0);
+	trans[0][42]	= settr(41,0,43,50,0,"printf('Server %d (pid %d) processed 10 messages and is terminating\\n',id,_pid)", 0, 2, 0);
+	trans[0][43]	= settr(42,0,55,51,51,"server_mutex = 1", 1, 2, 0);
+	trans[0][44]	= settr(43,0,55,1,0,"goto end", 0, 2, 0);
+	trans[0][48]	= settr(47,0,49,1,0,".(goto)", 0, 2, 0);
+	trans[0][45]	= settr(44,0,46,2,0,"else", 0, 2, 0);
+	trans[0][46]	= settr(45,0,49,52,52,"server_mutex = 1", 1, 2, 0);
+	trans[0][49]	= settr(48,0,52,1,0,"(1)", 0, 2, 0);
+	trans[0][50]	= settr(49,0,51,2,0,"else", 0, 2, 0);
+	trans[0][51]	= settr(50,0,52,1,0,"(1)", 0, 2, 0);
+	trans[0][54]	= settr(53,0,55,1,0,"break", 0, 2, 0);
+	trans[0][55]	= settr(54,0,56,1,0,"(1)", 0, 2, 0);
+	trans[0][56]	= settr(55,0,0,53,53,"-end-", 0, 3500, 0);
 	/* np_ demon: */
 	trans[_NP_] = (Trans **) emalloc(3*sizeof(Trans *));
 	T = trans[_NP_][0] = settr(9997,0,1,_T5,0,"(np_)", 1,2,0);

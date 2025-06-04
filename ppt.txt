@@ -1,0 +1,306 @@
+# Detailed Presentation Guide: Formal Specification and Model Checking of RAFT Algorithm in Spin
+
+## Slide 1: Title Slide
+
+- **Title:** "Formal Specification and Model Checking of RAFT Algorithm in Spin"
+- **Author:** Akshit Dudeja
+- **Institution:** IIT Bhubaneswar
+- Simple, clean design with a distributed systems or consensus visual element
+
+## Slide 2: Agenda/Outline
+
+- Introduction to Formal Verification and Model Checking
+- Introduction to Consensus Algorithms
+- Overview of Raft Algorithm
+- Research Objectives
+- Modeling Approach
+- Safety Properties
+- Verification and Results
+- Conclusions and Future Directions
+
+## Slide 3: Introduction to Formal Verification
+
+- **Definition:** Mathematical approach to prove correctness of systems
+- **Key characteristics:**
+  - Exhaustive analysis of system behavior
+  - Mathematical guarantee of correctness
+  - Proves absence of errors (vs. testing which only shows presence)
+- **Types of formal verification:**
+  - Theorem proving
+  - Model checking
+  - Static analysis
+- **Applications:** Critical systems, protocols, hardware, distributed systems
+
+## Slide 4: Model Checking Explained
+
+- **Definition:** Automated technique to verify if a system model meets a formal specification
+- **How it works:**
+  - System represented as finite-state model
+  - Properties expressed as temporal logic formulas
+  - Checker explores all possible states (state space)
+  - Verifies properties hold in all reachable states
+- **Mathematical formulation:**
+  - System model M represented as transition system (S, S₀, R)
+    - S = set of states
+    - S₀ ⊆ S = initial states
+    - R ⊆ S × S = transition relation
+  - Property φ expressed in LTL (Linear Temporal Logic)
+  - Verification checks if M ⊨ φ (model M satisfies property φ)
+  - Core LTL operators:
+    - □φ (always φ): written as []φ in Promela
+    - ◇φ (eventually φ): written as <>φ in Promela
+    - φ₁Uφ₂ (φ₁ until φ₂): φ₁ holds until φ₂ becomes true
+    - Xφ (next φ): property holds in next state
+- **SPIN approach:** Converts ¬φ (negation of property) to Büchi automaton and checks for empty intersection with system automaton
+
+## Slide 5: Challenges in Model Checking
+
+- **State Space Explosion:**
+  - Number of states grows exponentially with system size
+  - Primary limitation of model checking
+- **Mitigation Techniques:**
+  - State compression
+  - Partial order reduction
+  - Symmetry reduction
+  - Abstraction techniques
+- **Why critical for consensus algorithms:**
+  - Highly concurrent systems
+  - Complex failure modes
+  - Difficult to test exhaustively through simulation
+  - Safety properties must hold under all conditions
+
+## Slide 6: Introduction to Consensus Algorithms
+
+- **Definition:** Protocols used in distributed systems to reach agreement across multiple nodes
+- **Two types:**
+  - Crash Fault Tolerance (CFT): Handles node crashes (Paxos, Raft)
+  - Byzantine Fault Tolerance (BFT): Handles malicious behavior
+- **Importance:** Essential for blockchain, distributed databases, and peer-to-peer networks
+- **Existing challenges:** Hard to implement correctly and verify
+
+## Slide 7: The Raft Algorithm
+
+- **Origin:** Designed by Diego Ongaro and John Ousterhout in 2014
+- **Purpose:** Created as an understandable alternative to Paxos
+- **Structure:** Leader-follower architecture
+- **Core components:**
+  - Leader election
+  - Log replication
+  - Safety guarantees
+- **Key benefit:** Understandability without sacrificing correctness
+
+## Slide 8: Research Objectives
+
+- Formally verify Raft's safety properties using model checking
+- Extend previous work with:
+  - Support for arbitrary number of servers
+  - Comprehensive fault handling (CRASHED state)
+  - Network layer abstraction
+  - Monitoring capabilities
+  - Improved non-deterministic event handling
+  - Heartbeat messages
+  - Unified communication channels
+  - State-based code organization
+
+## Slide 9: Raft Server States
+
+- **Include the state transition diagram from Figure 2**
+- **Four key states:**
+  - Follower: Passive, responds to leaders/candidates
+  - Candidate: Initiates elections
+  - Leader: Handles client requests, manages log replication
+  - Crashed: Non-responsive servers
+- **Transition rules:** Show state transition table (simplified version from Table 1)
+
+## Slide 10: Raft Core Mechanisms
+
+- **Terms:** Logical clock, monotonically increasing integers
+- **Elections:**
+  - Triggered by timeouts
+  - Candidates vote for themselves
+  - Request votes from others
+  - Win by majority vote
+- **Log Replication:**
+  - Leader receives client requests
+  - Leader replicates to followers
+  - Commit after majority confirmation
+
+## Slide 11: Formal Modeling Approach
+
+- **Tool:** SPIN model checker with Promela language
+- **Why formal verification?** Provides mathematical assurance of correctness
+- **Elements modeled:**
+  - Nodes as Promela processes
+  - States as variables (follower, candidate, leader, crashed)
+  - RPCs as message channels
+  - Events as variable changes
+  - Transitions as control flow
+
+## Slide 12: Implementation - Promela Structure
+
+- **State representation:**
+
+```
+mtype:State = {leader, candidate, follower, crashed};
+mtype:State state[NUM_SERVERS];
+```
+
+- **Message types:**
+
+```
+mtype:MessageType = {APPEND_ENTRY, APPEND_ENTRY_RESPONSE,
+                     REQUEST_VOTE, REQUEST_VOTE_RESPONSE,
+                     HEARTBEAT};
+```
+
+- **Channel declaration:**
+
+```
+chan toNodes[NUM_SERVERS]=[MSG_CAPACITY] of {Message};
+```
+
+## Slide 13: Implementation - Network & Communication
+
+- **Network process:** Handles message routing between servers
+  - Processes messages from servers
+  - Routes to appropriate recipients
+  - Sends copies to monitor
+- **Monitoring:** Logs all system events for analysis
+- **Timeout handling:** Critical for election triggering
+
+```
+do
+:: (serverTimeouts[sid]==0) -> atomic {
+    // Handle Timeout Logic
+   };
+:: (serverTimeouts[sid]!=0) -> serverTimeouts[sid]--;
+od;
+```
+
+## Slide 14: Message Handling
+
+- **Types of messages:**
+  - AppendEntry: Log replication
+  - RequestVote: Election process
+  - Heartbeat: Leadership maintenance
+- **Handling incoming messages:**
+
+```
+if
+:: (msg.messageType == REQUEST_VOTE) -> atomic {
+    // Handle vote request
+   }
+:: (msg.messageType == HEARTBEAT) -> atomic {
+    // Handle heartbeat: reset timeout, update term
+   }
+fi;
+```
+
+- **Term handling:** Ensuring newer terms always prevail
+
+## Slide 15: Safety Properties - LTL Specification
+
+- **Linear Temporal Logic (LTL):** Formal language for expressing temporal properties
+- **Categories of properties verified:**
+  1. Liveness and stability guarantees
+  2. Core protocol safety
+  3. Crash and recovery conditions
+- **Example LTL property (Election Safety):**
+
+```
+#define ELECTION_SAFETY(id1, id2) []
+(
+  !((state[id1] == LEADER && state[id2] == LEADER &&
+     currentTerm[id1] == currentTerm[id2]))
+)
+```
+
+## Slide 16: Key Safety Properties
+
+- **Election Safety:** Only one leader per term
+- **Log Matching:** If two logs have entries with same index/term, all prior entries match
+- **Leader Completeness:** Committed entries persist across leader changes
+- **State Machine Safety:** Same commands applied at same indices
+- **Crash Safety:** System remains consistent despite crashes
+- **Liveness:** Eventually some server becomes leader
+- **Heartbeat effectiveness:** Leaders maintain authority properly
+
+## Slide 17: Verification Setup
+
+- **Server configurations:** 5 to 20 servers
+- **Search parameters:**
+  - Search depth: 1000
+  - Safety verification (-DSAFETY)
+  - Vectorized representation (-DVECTORSZ=20000)
+- **Optimization techniques:**
+  - Partial-order reduction
+  - Compression (95-98% efficiency)
+  - Atomic blocks to reduce interleaving
+
+## Slide 18: Verification Results - Resource Usage
+
+- **State vector growth:** Linear with server count (~252 bytes per additional server)
+- **Memory consumption:** Nearly linear scaling
+  - 5 servers: ~7GB
+  - 10 servers: ~12GB
+  - 15 servers: ~18GB
+  - 20 servers: ~24GB
+- **State compression:** Maintained 95-98% efficiency across configurations
+- **Show Table 3 (State Vector Size and Memory Characteristics)**
+
+## Slide 19: Performance Analysis by Property Type
+
+- **Verification performance trends:**
+  - Liveness properties: 1.4x degradation (5→20 servers)
+  - Safety properties: 3.0x degradation
+  - Log-related properties: 1.8x degradation
+  - Crash-related properties: 3.4x degradation (highest complexity)
+- **Key observation:** Different property classes exhibit distinct scaling patterns
+- **Show Table 6 (Performance Trend Analysis by Property Type)**
+
+## Slide 20: Verification States Explored
+
+- **States explored per property class:**
+  - Core safety properties: ~5-6 million states
+  - Liveness properties: ~5-7 million states
+  - Crash recovery properties: ~4-6 million states
+- **Consistency in findings:** No safety violations discovered across millions of states
+- **Search limitations:** No exhaustive search could complete due to state space size
+- **Confidence level:** High, despite incompleteness of verification
+
+## Slide 21: Key Findings and Limitations
+
+- **All safety properties verified successfully**
+- No violations found in millions of states examined
+- **Scalability challenges:**
+  - State space explosion
+  - Memory constraints beyond 20 servers
+  - Search depth limitations
+  - Increasing verification times
+- **Key finding:** Raft algorithm correctly maintains safety guarantees across server configurations
+- Property-specific verification strategies needed for optimal performance
+
+## Slide 22: Conclusions and Future Work
+
+- **Contributions:**
+  - Extended Promela model with arbitrary server counts
+  - Formal verification across different cluster sizes
+  - Detailed performance analysis with scaling insights
+  - Validation of crash fault tolerance
+  - Novel insights on property-specific verification performance
+- **Future directions:**
+  - Advanced state space reduction techniques
+  - Byzantine fault tolerance extension
+  - Property-specific optimization approaches
+
+## Design Guidelines
+
+- Use a consistent, clean design theme
+- Include visuals: state diagrams, transition tables, and performance graphs
+- Use code blocks sparingly and only for key concepts
+- Emphasize the contributions and findings
+- Consider using animations to build complex concepts step by step
+- Use color consistently to differentiate server states and property types
+
+
+Use Learnscape

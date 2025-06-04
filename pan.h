@@ -2,7 +2,7 @@
 #define PAN_H
 
 #define SpinVersion	"Spin Version 6.5.2 -- 6 December 2019"
-#define PanSource	"raft_sem8.pml"
+#define PanSource	"test.pml"
 
 #define G_long	8
 #define G_int	4
@@ -127,7 +127,7 @@
 	#undef NOCLAIM
 #endif
 #ifndef NOCLAIM
-	#define NCLAIMS	4
+	#define NCLAIMS	3
 	#ifndef NP
 		#define VERI	5
 	#endif
@@ -139,35 +139,35 @@ typedef struct S_F_MAP {
 	int upto;
 } S_F_MAP;
 
-#define _nstates5	11	/* uniqueness */
-#define minseq5	438
-#define maxseq5	447
-#define _endstate5	10
+#define _nstates5	7	/* server_usage */
+#define minseq5	114
+#define maxseq5	119
+#define _endstate5	6
 
-#define _nstates4	28	/* electionFairness */
-#define minseq4	411
-#define maxseq4	437
-#define _endstate4	27
+#define _nstates4	7	/* message_processing */
+#define minseq4	108
+#define maxseq4	113
+#define _endstate4	6
 
-#define _nstates3	14	/* fairness */
-#define minseq3	398
-#define maxseq3	410
-#define _endstate3	13
+#define _nstates3	11	/* no_server_overload */
+#define minseq3	98
+#define maxseq3	107
+#define _endstate3	10
 
-#define _nstates2	7	/* liveness */
-#define minseq2	392
-#define maxseq2	397
-#define _endstate2	6
+#define _nstates2	9	/* :init: */
+#define minseq2	90
+#define maxseq2	97
+#define _endstate2	8
 
-#define _nstates1	17	/* :init: */
-#define minseq1	376
-#define maxseq1	391
-#define _endstate1	16
+#define _nstates1	35	/* Client */
+#define minseq1	56
+#define maxseq1	89
+#define _endstate1	34
 
-#define _nstates0	377	/* server */
+#define _nstates0	57	/* Server */
 #define minseq0	0
-#define maxseq0	375
-#define _endstate0	376
+#define maxseq0	55
+#define _endstate0	56
 
 extern short src_ln5[];
 extern short src_ln4[];
@@ -182,12 +182,12 @@ extern S_F_MAP src_file2[];
 extern S_F_MAP src_file1[];
 extern S_F_MAP src_file0[];
 
-#define T_ID	unsigned short
-#define _T5	147
-#define _T2	148
+#define T_ID	unsigned char
+#define _T5	54
+#define _T2	55
 #define WS		8 /* word size in bytes */
 #define SYNC	0
-#define ASYNC	1
+#define ASYNC	3
 
 #ifndef NCORE
 	#ifdef DUAL_CORE
@@ -199,123 +199,82 @@ extern S_F_MAP src_file0[];
 	#endif
 #endif
 
-struct Heartbeat { /* user defined type */
-	uchar term;
-	uchar leaderId;
-	uchar prevLogIndex;
-	uchar prevLogTerm;
-	uchar leaderCommit;
-};
-struct AppendEntry { /* user defined type */
-	uchar term;
-	uchar leaderCommit;
-	uchar index;
-	uchar prevLogTerm;
-};
-struct AppendEntryResponse { /* user defined type */
-	uchar term;
-	unsigned success : 1;
-};
-struct RequestVote { /* user defined type */
-	uchar term;
-	uchar lastLogIndex;
-	uchar lastLogTerm;
-};
-struct RequestVoteResponse { /* user defined type */
-	uchar term;
-	unsigned voteGranted : 1;
-};
-struct Message { /* user defined type */
-	uchar messageType;
-	uchar sender;
-	uchar receiver;
-	struct AppendEntry appendEntry;
-	struct AppendEntryResponse appendEntryResponse;
-	struct RequestVote requestVote;
-	struct RequestVoteResponse requestVoteResponse;
-};
-struct Logs { /* user defined type */
-	uchar logs[2];
-};
-typedef struct P5 { /* uniqueness */
+typedef struct P5 { /* server_usage */
 	unsigned _pid : 8;  /* 0..255 */
 	unsigned _t   : 4; /* proctype */
-	unsigned _p   : 10; /* state    */
+	unsigned _p   : 7; /* state    */
 #ifdef HAS_PRIORITY
 	unsigned _priority : 8; /* 0..255 */
 #endif
 } P5;
 #define Air5	(sizeof(P5) - 3)
 
-typedef struct P4 { /* electionFairness */
+typedef struct P4 { /* message_processing */
 	unsigned _pid : 8;  /* 0..255 */
 	unsigned _t   : 4; /* proctype */
-	unsigned _p   : 10; /* state    */
+	unsigned _p   : 7; /* state    */
 #ifdef HAS_PRIORITY
 	unsigned _priority : 8; /* 0..255 */
 #endif
 } P4;
 #define Air4	(sizeof(P4) - 3)
 
-typedef struct P3 { /* fairness */
+typedef struct P3 { /* no_server_overload */
 	unsigned _pid : 8;  /* 0..255 */
 	unsigned _t   : 4; /* proctype */
-	unsigned _p   : 10; /* state    */
+	unsigned _p   : 7; /* state    */
 #ifdef HAS_PRIORITY
 	unsigned _priority : 8; /* 0..255 */
 #endif
 } P3;
 #define Air3	(sizeof(P3) - 3)
 
-typedef struct P2 { /* liveness */
+#define Pinit	((P2 *)_this)
+typedef struct P2 { /* :init: */
 	unsigned _pid : 8;  /* 0..255 */
 	unsigned _t   : 4; /* proctype */
-	unsigned _p   : 10; /* state    */
+	unsigned _p   : 7; /* state    */
 #ifdef HAS_PRIORITY
 	unsigned _priority : 8; /* 0..255 */
 #endif
 } P2;
 #define Air2	(sizeof(P2) - 3)
 
-#define Pinit	((P1 *)_this)
-typedef struct P1 { /* :init: */
+#define PClient	((P1 *)_this)
+typedef struct P1 { /* Client */
 	unsigned _pid : 8;  /* 0..255 */
 	unsigned _t   : 4; /* proctype */
-	unsigned _p   : 10; /* state    */
+	unsigned _p   : 7; /* state    */
 #ifdef HAS_PRIORITY
 	unsigned _priority : 8; /* 0..255 */
 #endif
-	uchar i;
+	uchar id;
+	uchar msg_type;
+	uchar server_id;
+	uchar dummy;
+	uchar requests_handled;
 } P1;
-#define Air1	(sizeof(P1) - Offsetof(P1, i) - 1*sizeof(uchar))
+#define Air1	(sizeof(P1) - Offsetof(P1, requests_handled) - 1*sizeof(uchar))
 
-#define Pserver	((P0 *)_this)
-typedef struct P0 { /* server */
+#define PServer	((P0 *)_this)
+typedef struct P0 { /* Server */
 	unsigned _pid : 8;  /* 0..255 */
 	unsigned _t   : 4; /* proctype */
-	unsigned _p   : 10; /* state    */
+	unsigned _p   : 7; /* state    */
 #ifdef HAS_PRIORITY
 	unsigned _priority : 8; /* 0..255 */
 #endif
-	unsigned logOk : 1;
-	unsigned _11_7_voteGranted : 1;
-	uchar votesGranted[3];
-	uchar serverId;
-	uchar votedFor;
-	uchar i;
-	uchar lastLogTerm;
-	uchar lastLogIndex;
-	uchar voteCount;
-	uchar _11_7_sender;
-	struct Message msg;
-	struct Message outMsg;
+	uchar id;
+	uchar msg_type;
+	uchar client_id;
+	uchar client_pid;
 } P0;
-#define Air0	0
+#define Air0	(sizeof(P0) - Offsetof(P0, client_pid) - 1*sizeof(uchar))
 
 typedef struct P6 { /* np_ */
 	unsigned _pid : 8;  /* 0..255 */
 	unsigned _t   : 4; /* proctype */
-	unsigned _p   : 10; /* state    */
+	unsigned _p   : 7; /* state    */
 #ifdef HAS_PRIORITY
 	unsigned _priority : 8; /* 0..255 */
 #endif
@@ -333,7 +292,7 @@ typedef struct P6 { /* np_ */
 typedef struct P7 {
 	unsigned _pid : 8; /* always zero */
 	unsigned _t   : 4; /* active-claim type  */
-	unsigned _p   : 10; /* active-claim state */
+	unsigned _p   : 7; /* active-claim state */
 	unsigned _n   : 3; /* active-claim index */
 	uchar c_cur[NCLAIMS]; /* claim-states */
 } P7;
@@ -526,15 +485,15 @@ typedef struct State {
 		unsigned short _event;
 	#endif
 #endif
-	unsigned isLeader : 1;
-	uchar leaders;
-	uchar consecutiveCrashes[3];
-	uchar currentTerm[3];
-	uchar commitIndex[3];
-	uchar time_out[3];
-	uchar toNodes[3];
-	uchar state[3];
-	struct Logs logs[3];
+	uchar server_busy[3];
+	uchar client_served_by[3];
+	uchar messages_processed;
+	uchar client_requests[3];
+	uchar server_requests[3];
+	uchar server_mutex;
+	uchar client_to_server1;
+	uchar client_to_server2;
+	uchar server_to_client;
 #ifdef TRIX
 	/* room for 512 proc+chan ptrs, + safety margin */
 	char *_ids_[MAXPROC+MAXQ+4];
@@ -556,8 +515,7 @@ typedef struct TRIX_v6 {
 #endif
 
 #define HAS_TRACK	0
-/* hidden variable: */	uchar leader[3];
-/* hidden variable: */	uchar connect[3];
+/* hidden variable: */	uchar client_done[3];
 #define FORWARD_MOVES	"pan.m"
 #define BACKWARD_MOVES	"pan.b"
 #define TRANSITIONS	"pan.t"
@@ -566,16 +524,16 @@ typedef struct TRIX_v6 {
 #define _endstate6	2 /* np_ */
 
 #define _start6	0 /* np_ */
-#define _start5	6
-#define _start4	9
-#define _start3	5
-#define _start2	3
-#define _start1	1
-#define _start0	1
+#define _start5	3
+#define _start4	3
+#define _start3	6
+#define _start2	6
+#define _start1	30
+#define _start0	52
 #ifdef NP
 	#define ACCEPT_LAB	1 /* at least 1 in np_ */
 #else
-	#define ACCEPT_LAB	6 /* user-defined accept labels */
+	#define ACCEPT_LAB	3 /* user-defined accept labels */
 #endif
 #ifdef MEMCNT
 	#ifdef MEMLIM
@@ -603,7 +561,7 @@ typedef struct TRIX_v6 {
 #if NCORE>1 && !defined(MEMLIM)
 	#define MEMLIM	(2048)	/* need a default, using 2 GB */
 #endif
-#define PROG_LAB	1 /* progress labels */
+#define PROG_LAB	0 /* progress labels */
 #define NQS	3
 typedef struct Q3 {
 	uchar Qlen;	/* q_size */
@@ -612,18 +570,7 @@ typedef struct Q3 {
 		uchar fld0;
 		uchar fld1;
 		uchar fld2;
-		uchar fld3;
-		uchar fld4;
-		uchar fld5;
-		uchar fld6;
-		uchar fld7;
-		unsigned fld8 : 1;
-		uchar fld9;
-		uchar fld10;
-		uchar fld11;
-		uchar fld12;
-		unsigned fld13 : 1;
-	} contents[10];
+	} contents[4];
 } Q3;
 typedef struct Q2 {
 	uchar Qlen;	/* q_size */
@@ -632,18 +579,7 @@ typedef struct Q2 {
 		uchar fld0;
 		uchar fld1;
 		uchar fld2;
-		uchar fld3;
-		uchar fld4;
-		uchar fld5;
-		uchar fld6;
-		uchar fld7;
-		unsigned fld8 : 1;
-		uchar fld9;
-		uchar fld10;
-		uchar fld11;
-		uchar fld12;
-		unsigned fld13 : 1;
-	} contents[10];
+	} contents[2];
 } Q2;
 typedef struct Q1 {
 	uchar Qlen;	/* q_size */
@@ -652,18 +588,7 @@ typedef struct Q1 {
 		uchar fld0;
 		uchar fld1;
 		uchar fld2;
-		uchar fld3;
-		uchar fld4;
-		uchar fld5;
-		uchar fld6;
-		uchar fld7;
-		unsigned fld8 : 1;
-		uchar fld9;
-		uchar fld10;
-		uchar fld11;
-		uchar fld12;
-		unsigned fld13 : 1;
-	} contents[10];
+	} contents[2];
 } Q1;
 typedef struct Q0 {	/* generic q */
 	uchar Qlen;	/* q_size */
@@ -979,7 +904,7 @@ typedef struct BFS_State {
 } BFS_State;
 #endif
 
-void qsend(int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int);
+void qsend(int, int, int, int, int, int);
 
 #define Addproc(x,y)	addproc(256, y, x, 0)
 #define LOCAL	1
@@ -991,7 +916,7 @@ void qsend(int, int, int, int, int, int, int, int, int, int, int, int, int, int,
 #define GLOBAL	7
 #define BAD	8
 #define ALPHA_F	9
-#define NTRANS	149
+#define NTRANS	56
 #if defined(BFS_PAR) || NCORE>1
 	void e_critical(int);
 	void x_critical(int);

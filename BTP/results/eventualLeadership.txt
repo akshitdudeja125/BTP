@@ -1,0 +1,145 @@
+N=5
+➜  BTP git:(main) ✗ spin -a raft_sem8.pml
+gcc -DVECTORSZ=20000 -DSAFETY -o pan pan.c
+./pan -m1000
+ltl eventualLeadership: ((<> (((state[0]==1)) && (<> ((state[0]==4))))) || (<> (((state[1]==1)) && (<> ((state[1]==4)))))) || (<> (((state[2]==1)) && (<> ((state[2]==4)))))
+warning: never claim + accept labels requires -a flag to fully verify
+error: max search depth too small
+Depth=     999 States=    1e+06 Transitions= 5.98e+06 Memory=  1245.706       t=     48.2 R=   2e+04
+Depth=     999 States=    2e+06 Transitions= 1.18e+07 Memory=  2359.598       t=      100 R=   2e+04
+Depth=     999 States=    3e+06 Transitions= 1.79e+07 Memory=  3473.490       t=      161 R=   2e+04
+Depth=     999 States=    4e+06 Transitions= 2.48e+07 Memory=  4587.381       t=      264 R=   2e+04
+Depth=     999 States=    5e+06 Transitions= 3.17e+07 Memory=  5701.273       t=      423 R=   1e+04
+^CInterrupted
+
+(Spin Version 6.5.2 -- 6 December 2019)
+Warning: Search not completed
+        + Partial Order Reduction
+
+Full statespace search for:
+        never claim             + (eventualLeadership)
+        assertion violations    + (if within scope of claim)
+        cycle checks            - (disabled by -DSAFETY)
+        invalid end states      - (disabled by never claim)
+
+State-vector 1184 byte, depth reached 999, errors: 0
+  5245685 states, stored
+ 27955322 states, matched
+ 33201007 transitions (= stored+matched)
+ 21977824 atomic steps
+hash conflicts:    358006 (resolved)
+
+Stats on memory usage (in Megabytes):
+ 6063.242       equivalent memory usage for states (stored*(State-vector + overhead))
+ 5850.799       actual memory usage for states (compression: 96.50%)
+                state-vector as stored = 1142 byte + 28 byte overhead
+  128.000       memory used for hash table (-w24)
+    0.054       memory used for DFS stack (-m1000)
+    2.921       memory lost to fragmentation
+ 5975.931       total actual memory usage
+
+
+
+pan: elapsed time 470 seconds
+pan: rate 11169.587 states/second
+➜  BTP git:(main) ✗ 
+
+n=10
+
+➜  BTP git:(main) ✗
+➜  BTP git:(
+➜  BTP git:(
+➜  BTP gi
+➜  BTP git:(main) ✗ spin -a raft_sem8.pml
+gcc -DVECTORSZ=20000 -DSAFETY -o pan pan.c
+./pan -m1000
+ltl eventualLeadership: ((<> (((state[0]==1)) && (<> ((state[0]==4))))) || (<> (((state[1]==1)) && (<> ((state[1]==4)))))) || (<> (((state[2]==1)) && (<> ((state[2]==4)))))
+warning: never claim + accept labels requires -a flag to fully verify
+error: max search depth too small
+Depth=     999 States=    1e+06 Transitions= 3.43e+06 Memory=  2359.598       t=     76.1 R=   1e+04
+Depth=     999 States=    2e+06 Transitions= 6.23e+06 Memory=  4587.381       t=      178 R=   1e+04
+Depth=     999 States=    3e+06 Transitions= 8.98e+06 Memory=  6815.164       t=      355 R=   8e+03
+Depth=     999 States=    4e+06 Transitions= 1.17e+07 Memory=  9042.948       t=      550 R=   7e+03
+Depth=     999 States=    5e+06 Transitions= 1.43e+07 Memory= 11272.638       t=      727 R=   7e+03
+^CInterrupted
+
+(Spin Version 6.5.2 -- 6 December 2019)
+Warning: Search not completed
+        + Partial Order Reduction
+
+Full statespace search for:
+        never claim             + (eventualLeadership)
+        assertion violations    + (if within scope of claim)
+        cycle checks            - (disabled by -DSAFETY)
+        invalid end states      - (disabled by never claim)
+
+State-vector 2412 byte, depth reached 999, errors: 0
+  5048589 states, stored
+  9357204 states, matched
+ 14405793 transitions (= stored+matched)
+  4663996 atomic steps
+hash conflicts:    356970 (resolved)
+
+Stats on memory usage (in Megabytes):
+11747.892       equivalent memory usage for states (stored*(State-vector + overhead))
+11255.356       actual memory usage for states (compression: 95.81%)
+                state-vector as stored = 2310 byte + 28 byte overhead
+  128.000       memory used for hash table (-w24)
+    0.054       memory used for DFS stack (-m1000)
+    3.960       memory lost to fragmentation
+11379.450       total actual memory usage
+
+
+
+pan: elapsed time 735 seconds
+pan: rate 6869.6698 states/second
+➜  BTP git:(main) ✗ 
+
+n=15
+➜  BTP gi
+➜  BTP git:(main) ✗ spin -a raft_sem8.pml
+gcc -DVECTORSZ=20000 -DSAFETY -o pan pan.c
+./pan -m1000
+ltl eventualLeadership: ((<> (((state[0]==1)) && (<> ((state[0]==4))))) || (<> (((state[1]==1)) && (<> ((state[1]==4)))))) || (<> (((state[2]==1)) && (<> ((state[2]==4)))))
+warning: never claim + accept labels requires -a flag to fully verify
+error: max search depth too small
+Depth=     999 States=    1e+06 Transitions= 1.06e+07 Memory=  3574.579       t=      106 R=   9e+03
+Depth=     999 States=    2e+06 Transitions= 2.12e+07 Memory=  7017.343       t=      270 R=   7e+03
+Depth=     999 States=    3e+06 Transitions= 3.17e+07 Memory= 10460.108       t=      505 R=   6e+03
+Depth=     999 States=    4e+06 Transitions= 4.21e+07 Memory= 13902.872       t=      775 R=   5e+03
+^CInterrupted
+
+(Spin Version 6.5.2 -- 6 December 2019)
+Warning: Search not completed
+        + Partial Order Reduction
+
+Full statespace search for:
+        never claim             + (eventualLeadership)
+        assertion violations    + (if within scope of claim)
+        cycle checks            - (disabled by -DSAFETY)
+        invalid end states      - (disabled by never claim)
+
+State-vector 3724 byte, depth reached 999, errors: 0
+  4950824 states, stored
+ 46606976 states, matched
+ 51557800 transitions (= stored+matched)
+ 10365526 atomic steps
+hash conflicts:    229211 (resolved)
+
+Stats on memory usage (in Megabytes):
+17714.969       equivalent memory usage for states (stored*(State-vector + overhead))
+17059.581       actual memory usage for states (compression: 96.30%)
+                state-vector as stored = 3585 byte + 28 byte overhead
+  128.000       memory used for hash table (-w24)
+    0.054       memory used for DFS stack (-m1000)
+   11.752       memory lost to fragmentation
+17175.882       total actual memory usage
+
+
+
+pan: elapsed time 967 seconds
+pan: rate 5117.^C^C^C^C^C%         
+➜  BTP git:(main) ✗ 
+
+
+n=20
